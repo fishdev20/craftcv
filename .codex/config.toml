@@ -1,0 +1,4 @@
+# Project-scoped Codex settings; Claude Code reads the same server from .mcp.json.
+[mcp_servers.heroui-react]
+command = "npx"
+args = ["-y", "@heroui/react-mcp@latest"]

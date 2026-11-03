@@ -1,0 +1,12 @@
+node_modules/
+out/
+release/
+coverage/
+.env*
+*.p12
+*.p8
+*.cer
+*.certSigningRequest
+*.log
+.DS_Store
+artifacts/

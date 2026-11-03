@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- CraftCV: a C that holds a CV, its one cyan line the line tailored to the job -->
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#17293b"/>
+      <stop offset="1" stop-color="#09111a"/>
+    </linearGradient>
+  </defs>
+  <rect x="32" y="32" width="960" height="960" rx="216" fill="url(#tile)"/>
+  <rect x="44" y="44" width="936" height="936" rx="205" fill="none" stroke="#ffffff" stroke-opacity=".08" stroke-width="8"/>
+  <!-- shifted right so the C and its opening sit centred in the tile -->
+  <g transform="translate(18 0)">
+    <path d="M720 296A300 300 0 1 0 720 728" fill="none" stroke="#00cbff" stroke-width="100" stroke-linecap="round"/>
+    <rect x="386" y="342" width="252" height="340" rx="34" fill="#f4f7fa"/>
+    <g fill="none" stroke-linecap="round">
+      <path d="M430 414H526" stroke="#0a121b" stroke-width="36"/>
+      <path d="M430 486H594M430 622H560" stroke="#bcc7d2" stroke-width="24"/>
+      <path d="M430 554H594" stroke="#00cbff" stroke-width="24"/>
+    </g>
+  </g>
+</svg>

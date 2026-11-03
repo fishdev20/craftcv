@@ -1,0 +1,15 @@
+# CraftCV design system
+
+A daylight-first desktop workspace for developers reviewing an application. The color strategy is restrained: light blue-tinted workspace layers, near-white content surfaces, and one cyan accent reserved for primary actions, focus, and selected states. Dark mode uses the same cyan accent over near-black blue-tinted layers.
+
+System sans-serif throughout. 14 px base; 32 px primary heading, 14.5 px section heading. Small labels support the task hierarchy without competing with source text. Mono is reserved for file paths and source excerpts.
+
+HeroUI theme tokens live in `src/renderer/styles.css`. The light accent is `oklch(78% 0.16 225)`, the background is `oklch(97.02% 0.02 225)`, and neutrals carry a visible blue tint (chroma 0.02–0.04 at hue 225). Controls use a 6 px radius and major workflow surfaces use 12 px. One-pixel separators communicate structure; shadows are reserved for transient overlays and pinned alerts.
+
+The navigation sidebar floats 10 px in from the window edges (rounded 14 px, a soft shadow, `--surface`), after HeroUI Pro's floating sidebar; it collapses to a 56 px icon rail with the header toggle or ⌘B. A translucent sticky header sits above the content. Both stay visually quieter than the task. Product pages use functional titles and short descriptions. A new application uses five focused pages: Job, Requirements, Your CV, Projects, and Review. The tracker is a compact progress row using unmodified HeroUI buttons over a hairline baseline. Each step is a single 820 px reading column with a plain heading, sparse dividers, and one forward action. There is no enclosing workflow card, repeated step badge, or tinted footer bar. HeroUI fields, tabs, buttons, and disclosures keep their library styling; CraftCV CSS controls only page composition and owned content wrappers. Evidence suggestions keep only the containment needed to distinguish editable claims. Local data and privacy behavior remain visible without interrupting the task.
+
+HeroUI v3 provides the shared Button primitive with CraftCV mappings for primary, outline, ghost, danger, and compact states. Form controls use accessible labels, keyboard focus, live error/status regions, and explicit empty/loading states. Motion is limited to short interaction transitions and removed when reduced motion is preferred.
+
+## Document workspace
+
+The Documents library uses a compact row list. The editor keeps title, save status, exports, formatting toolbar, and zoom controls above a scrollable neutral canvas. An A4-width white document uses Arial by default with heading/list/table styles matching the export model. Users can select Georgia, Times New Roman, or Verdana, adjust size and color, and apply common text formatting. The canvas is continuous, not a live page-break preview. All toolbar actions have accessible labels, active states, and keyboard-compatible controls.

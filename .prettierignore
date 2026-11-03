@@ -1,0 +1,7 @@
+node_modules
+out
+release
+artifacts
+package-lock.json
+# Hairline engine (vendored, verified by hash) and figures (kept as validated by the hairline bench)
+src/renderer/common/hairline/**/*.js

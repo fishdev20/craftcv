@@ -1,0 +1,24 @@
+appId: org.craftcv.desktop
+productName: CraftCV
+icon: build/icon.png
+asar: true
+npmRebuild: true
+files:
+  - out/**
+  - package.json
+  - '!**/{test,tests,fixtures,docs,example,examples}/**'
+  - '!**/*.{map,md,ts}'
+asarUnpack:
+  - node_modules/better-sqlite3/build/Release/*.node
+directories:
+  output: release
+mac:
+  category: public.app-category.productivity
+  target: dmg
+  artifactName: ${productName}-${version}-mac-${arch}.${ext}
+win:
+  target: nsis
+linux:
+  target: AppImage
+  category: Office
+  artifactName: ${productName}-${version}-linux-${arch}.${ext}
