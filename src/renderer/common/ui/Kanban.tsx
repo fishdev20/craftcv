@@ -11,11 +11,7 @@ import {
 } from 'react-aria-components'
 import { Icon } from './icons'
 
-/*
- * A kanban board modelled on HeroUI Pro's (`@heroui-pro/react`, which this app does not use):
- * the same parts and `kanban__*` class names, on react-aria's GridList so cards can be dragged
- * with a pointer or, from their handle, the keyboard.
- */
+/* CraftCV's accessible board, built on React Aria GridList and HeroUI ScrollShadow. */
 
 type Size = 'sm' | 'md' | 'lg'
 const cx = (...names: (string | false | undefined)[]) => names.filter(Boolean).join(' ')

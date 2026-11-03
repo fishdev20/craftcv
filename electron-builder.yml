@@ -10,10 +10,25 @@ files:
   - '!**/*.{map,md,ts}'
 asarUnpack:
   - node_modules/better-sqlite3/build/Release/*.node
+extraResources:
+  - LICENSE
+  - THIRD_PARTY_NOTICES.md
+electronFuses:
+  resetAdHocDarwinSignature: true
+  runAsNode: false
+  enableCookieEncryption: true
+  enableNodeOptionsEnvironmentVariable: false
+  enableNodeCliInspectArguments: false
+  enableEmbeddedAsarIntegrityValidation: true
+  onlyLoadAppFromAsar: true
+  loadBrowserProcessSpecificV8Snapshot: false
+  # The packaged renderer currently loads from file:// inside app.asar.
+  grantFileProtocolExtraPrivileges: true
 directories:
   output: release
 mac:
   category: public.app-category.productivity
+  hardenedRuntime: true
   target: dmg
   artifactName: ${productName}-${version}-mac-${arch}.${ext}
 win:

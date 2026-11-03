@@ -1,10 +1,6 @@
 import type { HTMLAttributes } from 'react'
 
-/*
- * A label with light sweeping across it, for work in progress; modelled on HeroUI Pro's
- * TextShimmer (`@heroui-pro/react`, which this app does not use). It takes the text colour,
- * so `color` classes keep it visible; with reduced motion it is plain text.
- */
+/* A progress label that keeps the inherited text colour and respects reduced motion. */
 export default function TextShimmer({
   className,
   children,

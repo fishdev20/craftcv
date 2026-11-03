@@ -56,9 +56,9 @@ function encode(value: Buffer) {
   return value.toString('base64url')
 }
 
-function encryptionAvailable() {
+async function encryptionAvailable() {
   return (
-    safeStorage.isEncryptionAvailable() &&
+    (await safeStorage.isAsyncEncryptionAvailable()) &&
     (process.platform !== 'linux' || safeStorage.getSelectedStorageBackend() !== 'basic_text')
   )
 }
@@ -111,7 +111,7 @@ export class ChatGPTAuth {
   }
 
   private async read(): Promise<Record> {
-    if (!encryptionAvailable())
+    if (!(await encryptionAvailable()))
       throw new Error(
         'OS-backed credential encryption is unavailable. Unlock your system keychain first.',
       )
@@ -144,7 +144,7 @@ export class ChatGPTAuth {
   }
 
   private async write(record: Record) {
-    if (!encryptionAvailable())
+    if (!(await encryptionAvailable()))
       throw new Error(
         'OS-backed credential encryption is unavailable. Unlock your system keychain first.',
       )
@@ -155,7 +155,7 @@ export class ChatGPTAuth {
   }
 
   async status() {
-    if (!encryptionAvailable()) return { connected: false, email: null, models: [] }
+    if (!(await encryptionAvailable())) return { connected: false, email: null, models: [] }
     const record = await this.read()
     return {
       connected: Boolean(record.accessToken && record.refreshToken),

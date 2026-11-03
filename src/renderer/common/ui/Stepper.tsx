@@ -9,11 +9,7 @@ import {
 } from 'react'
 import { Icon } from './icons'
 
-/*
- * A stepper modelled on HeroUI Pro's (`@heroui-pro/react`, which this app does not use):
- * the same parts, class names, data attributes and CSS variables, built on HeroUI v3 tokens.
- * Controlled by `currentStep`; steps can be pressed when `onStepChange` is given.
- */
+/* CraftCV's compound stepper, built from semantic HTML and HeroUI v3 design tokens. */
 
 export type StepStatus = 'inactive' | 'active' | 'complete'
 type Size = 'sm' | 'md' | 'lg'

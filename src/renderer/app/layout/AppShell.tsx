@@ -11,7 +11,7 @@ const isTyping = (target: EventTarget | null) =>
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useSidebarCollapsed()
-  // ⌘B (Ctrl+B elsewhere) shows or hides the sidebar's labels, as in HeroUI Pro's layout
+  // ⌘B (Ctrl+B elsewhere) shows or hides the sidebar labels.
   useEffect(() => {
     const toggle = (event: KeyboardEvent) => {
       if (

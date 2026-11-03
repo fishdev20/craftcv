@@ -4,9 +4,9 @@ import { join } from 'node:path'
 import type { ApiKeyProvider } from '../../shared/contracts'
 export class Credentials {
   constructor(private directory: string) {}
-  private supported() {
+  private async supported() {
     return (
-      safeStorage.isEncryptionAvailable() &&
+      (await safeStorage.isAsyncEncryptionAvailable()) &&
       (process.platform !== 'linux' || safeStorage.getSelectedStorageBackend() !== 'basic_text')
     )
   }
@@ -18,7 +18,7 @@ export class Credentials {
     }
   }
   async get(provider: ApiKeyProvider): Promise<string> {
-    if (!this.supported()) return ''
+    if (!(await this.supported())) return ''
     try {
       return safeStorage.decryptString(await readFile(join(this.directory, `${provider}.key`)))
     } catch {
@@ -33,7 +33,7 @@ export class Credentials {
       })
       return
     }
-    if (!this.supported())
+    if (!(await this.supported()))
       throw new Error(
         'OS-backed credential encryption is unavailable. Unlock your system keychain first.',
       )

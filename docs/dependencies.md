@@ -15,6 +15,17 @@ Official references consulted:
 
 `npm audit --omit=dev` reported zero known vulnerabilities at implementation time. The full development dependency tree reported 25 moderate findings, including tooling transitive glob/minimatch dependencies. No automatic breaking downgrade or unverified override was applied. Re-run audits when releasing; audit results are time-sensitive.
 
+The production dependency license inventory contains permissive MIT, Apache-2.0, BSD, ISC, CC0,
+0BSD, and Zlib-compatible terms. `jszip` offers an MIT-or-GPL choice and CraftCV uses it under MIT.
+The vendored Hairline engine and Press figure are MIT licensed; the required copyright and license
+text are preserved in `THIRD_PARTY_NOTICES.md`. CraftCV's Stepper, Kanban, progress trace, shimmer,
+and loader are project-owned implementations built from semantic HTML, public HeroUI components,
+and Apache-2.0 React Aria—not copied paid component source.
+
+GitHub Actions are pinned to full commit SHAs. `npm run security:check` rejects unpinned actions,
+`pull_request_target`, and workflow-wide `write-all` permissions. Dependabot may update those pins
+through reviewed pull requests but does not automatically merge them.
+
 The local document editor adds Tiptap 3.32.2 (React, core, ProseMirror, StarterKit, tables, text style, text alignment), verified against npm engine/peer metadata and [official React setup](https://tiptap.dev/docs/editor/getting-started/install/react), [table](https://tiptap.dev/docs/editor/extensions/nodes/table), and [text style](https://tiptap.dev/docs/editor/extensions/functionality/text-style-kit) documentation. All Tiptap packages are pinned to the same version and editor code is route-split. This supersedes the original avoidance of a rich editor because the user explicitly requested full local document editing.
 
 Icons use Iconify: `@iconify/react` 6.0.4 (offline entry point, `@iconify/react/offline`, which contains no API loader) and `@iconify-icons/lucide` 2.0.26 per-icon data modules, replacing `lucide-react`. Only the icons registered in `src/renderer/icons.ts` are bundled, and nothing is fetched from the Iconify API at runtime, keeping the renderer offline. `tests/icons.test.ts` fails if the renderer references an unregistered icon.
