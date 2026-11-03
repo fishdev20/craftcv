@@ -63,8 +63,8 @@ full-disk encryption and protect backups. Deletion is logical, not forensic secu
 ## Verification
 
 CI runs formatting, context validation, workflow pin checks, TypeScript, ESLint, unit tests,
-production builds, dependency audits, CodeQL, and dependency review. It builds packages on Linux,
-macOS, and Windows and runs the Electron integration flows on macOS and Windows; maintainers also
-smoke-test packaged artifacts before a release. Release tags rerun the application and integration
-checks before building installers. Published installers include checksums and GitHub
-build-provenance attestations.
+production builds, dependency audits, CodeQL, and dependency review. It builds packages and runs the
+Electron integration flows on Linux, macOS, and Windows; maintainers also smoke-test packaged
+artifacts before a release. Release tags rerun the application and integration checks before
+building installers. Published installers include checksums and GitHub build-provenance
+attestations.
