@@ -41,7 +41,7 @@ npm run package:linux:x64 # Linux x64 AppImage
 - Deterministic technical requirement matching against source, with incremental progress, cancellation, caps, and metadata-based cache reuse.
 - Local, cited bullet drafts; optional one-call structured cloud generation with Zod validation, timeouts, transient HTTP retries, cancellation, and token usage.
 - Editable suggestions, evidence-gated approval/rejection, persistent sessions, approved-bullet clipboard copy.
-- **Documents:** a local editor on A4 pages with rich text, headings, fonts, alignment, lists, links, tables, undo/redo, zoom, and autosave. Start blank or choose the built-in Standard ATS or Compact developer template. PDF imports keep their layout and page breaks; PDF and DOCX export keep the page layout.
+- **Documents:** a local editor on A4 pages with rich text, headings, fonts, alignment, lists, links, tables, undo/redo, zoom, and autosave. Start blank or choose Standard ATS, Compact developer, Academic, or Modern accent from the visual template gallery. PDF imports keep their layout and page breaks; PDF and DOCX export keep the page layout.
 - Estimated ATS relevance: fraction of extracted technical requirements represented in approved, source-backed bullets. **Not a vendor ATS score or hiring prediction.**
 - PDF, DOCX, Markdown, and text CV import.
 - API-key storage using Electron safeStorage backed by macOS Keychain, Windows DPAPI, or Linux Secret Service/KWallet. Linux's insecure `basic_text` fallback is refused.

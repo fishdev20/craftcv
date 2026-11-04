@@ -3,17 +3,19 @@ import { documentText, pageLayout, parseDocument } from '../src/shared/document'
 import { documentTemplate, documentTemplates } from '../src/renderer/features/documents/templates'
 
 describe('document templates', () => {
-  it('ships two original editable starter layouts', () => {
+  it('ships four original editable starter layouts', () => {
     expect(documentTemplates.map((template) => template.id)).toEqual([
       'standard-ats',
       'compact-developer',
+      'academic',
+      'modern-accent',
     ])
     for (const template of documentTemplates) {
       const document = parseDocument(template.createDocument())
-      const content = documentText(document)
-      expect(content).toContain('Your name')
-      expect(content).toContain('Experience')
-      expect(content).toContain('Education')
+      const content = documentText(document).toLowerCase()
+      expect(content).toContain('your name')
+      expect(content).toContain('experience')
+      expect(content).toContain('education')
     }
   })
 
