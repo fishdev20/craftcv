@@ -9,6 +9,11 @@ export function useToolbarState(editor: Editor) {
       italic: e.isActive('italic'),
       underline: e.isActive('underline'),
       strike: e.isActive('strike'),
+      superscript: e.isActive('superscript'),
+      subscript: e.isActive('subscript'),
+      highlight: (e.getAttributes('textStyle').backgroundColor as string | undefined) ?? null,
+      indent: e.can().sinkListItem('listItem'),
+      outdent: e.can().liftListItem('listItem'),
       bullet: e.isActive('bulletList'),
       ordered: e.isActive('orderedList'),
       align:

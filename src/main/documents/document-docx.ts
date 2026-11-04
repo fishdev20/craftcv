@@ -6,14 +6,16 @@ import {
   HeadingLevel,
   LevelFormat,
   Paragraph,
+  Tab,
   Table,
   TableCell,
   TableRow,
+  TabStopType,
   TextRun,
   WidthType,
   type ParagraphChild,
 } from 'docx'
-import { pageLayout, parseDocument, type DocumentNode } from '../../shared/document'
+import { A4, pageLayout, parseDocument, type DocumentNode } from '../../shared/document'
 
 /** Word measures in twentieths of a point, and line spacing in 240ths of a line. */
 const twips = (points: number) => Math.round(points * 20)
@@ -22,7 +24,9 @@ const twips = (points: number) => Math.round(points * 20)
 export function toWordDocument(input: DocumentNode): Document {
   const root = parseDocument(input)
   const layout = pageLayout(root),
-    exact = layout.blockSpacing !== null
+    exact = layout.blockSpacing !== null,
+    // the space after paragraphs the person chose, else Word's usual 6pt
+    paragraphAfter = layout.paragraphSpacing === null ? 120 : twips(layout.paragraphSpacing)
   let pageBreak = false
   const numbering: {
     reference: string
@@ -46,6 +50,8 @@ export function toWordDocument(input: DocumentNode): Document {
       italics: marks.some((m) => m.type === 'italic'),
       underline: marks.some((m) => m.type === 'underline') ? {} : undefined,
       strike: marks.some((m) => m.type === 'strike'),
+      subScript: marks.some((m) => m.type === 'subscript') || undefined,
+      superScript: marks.some((m) => m.type === 'superscript') || undefined,
       font: style.fontFamily ?? undefined,
       size: style.fontSize ? Number.parseInt(style.fontSize) * 2 : undefined,
       color: style.color?.slice(1),
@@ -101,6 +107,32 @@ export function toWordDocument(input: DocumentNode): Document {
         pageBreak = true
         return []
       }
+      if (node.type === 'entryLine') {
+        // the right part sits at a right tab stop on the text's edge, so it reads as one line
+        const [start, end] = content
+        const width = twips(A4.width - layout.margins[1] - layout.margins[3])
+        const breakBefore = pageBreak
+        pageBreak = false
+        return [
+          new Paragraph({
+            tabStops: [{ type: TabStopType.RIGHT, position: width }],
+            children: [
+              ...(start?.content ?? []).flatMap((child) => inline(child)),
+              new TextRun({ children: [new Tab()] }),
+              ...(end?.content ?? []).flatMap((child) => inline(child)),
+            ],
+            pageBreakBefore: breakBefore || undefined,
+            numbering:
+              list && index === 0 ? { reference: list.reference, level: list.depth } : undefined,
+            spacing: exact
+              ? {
+                  after: twips(layout.blockSpacing ?? 0),
+                  line: Math.round(layout.lineHeight * 240),
+                }
+              : { after: paragraphAfter, line: Math.round(layout.lineHeight * 240) },
+          }),
+        ]
+      }
       if (node.type === 'horizontalRule')
         return [
           new Paragraph({
@@ -136,7 +168,7 @@ export function toWordDocument(input: DocumentNode): Document {
             list && index === 0 ? { reference: list.reference, level: list.depth } : undefined,
           spacing: exact
             ? { after: twips(layout.blockSpacing ?? 0), line: Math.round(layout.lineHeight * 240) }
-            : { after: 120, line: 276 },
+            : { after: paragraphAfter, line: Math.round(layout.lineHeight * 240) },
           keepNext: node.type === 'heading',
         }),
       ]

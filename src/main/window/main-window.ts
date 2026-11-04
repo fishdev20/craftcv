@@ -62,14 +62,20 @@ export class MainWindow {
       },
     })
     this.window = window
-    window.webContents.on('will-prevent-unload', () => {
-      void dialog.showMessageBox(window, {
+    // Unsaved edits hold the window open, but never trap the person: when saving keeps
+    // failing they can still close and lose those edits, after being told so.
+    window.webContents.on('will-prevent-unload', (event) => {
+      const choice = dialog.showMessageBoxSync(window, {
         type: 'warning',
         message: 'Your document has unsaved changes.',
         detail:
-          'Wait for autosave or use Retry save in the document editor before closing CraftCV.',
-        buttons: ['Keep editing'],
+          'Wait for autosave or use Retry save in the document editor. If saving keeps failing, use Save a copy, or close without saving to discard the changes since the last save.',
+        buttons: ['Keep editing', 'Close without saving'],
+        defaultId: 0,
+        cancelId: 0,
       })
+      // preventDefault on this event lets the window close despite the page's objection
+      if (choice === 1) event.preventDefault()
     })
     lockNavigation(window)
     window.on('closed', () => {

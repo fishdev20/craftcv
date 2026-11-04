@@ -3,11 +3,33 @@ import { action, notify, refreshDashboard } from '@/common/store/app-store'
 import { forgetResume } from '@/features/workspace/store'
 import { documentsApi, type ExportFormat } from './api'
 import { deleteDocument, flushDraft, forgetDraft, openDraft } from './drafts-store'
+import { documentTemplate, type DocumentTemplateId } from './templates'
 
 /** Creates a blank document, or one built from a session's approved bullets. */
 export const createDocument = (sessionId: string | null = null) =>
   action(async () => {
     const resume = await documentsApi.create(sessionId)
+    await refreshDashboard()
+    return resume
+  })
+
+/** Creates a normal editable document from one of CraftCV's built-in starter layouts. */
+export const createDocumentFromTemplate = (templateId: DocumentTemplateId) =>
+  action(async () => {
+    const template = documentTemplate(templateId)
+    const blank = await documentsApi.create(null)
+    let resume: Resume
+    try {
+      resume = await documentsApi.save({
+        id: blank.id,
+        name: template.documentName,
+        document: template.createDocument(),
+        revision: blank.revision,
+      })
+    } catch (error) {
+      await documentsApi.remove(blank.id).catch(() => {})
+      throw error
+    }
     await refreshDashboard()
     return resume
   })

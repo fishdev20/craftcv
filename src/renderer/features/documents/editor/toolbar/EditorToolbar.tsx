@@ -1,7 +1,11 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { Editor } from '@tiptap/react'
 import { Separator, Toolbar } from '@heroui/react'
+import FindBar from './FindBar'
+import HighlightMenu from './HighlightMenu'
+import InsertMenu from './InsertMenu'
 import LinkForm from './LinkForm'
+import PageSetupBar from './PageSetupBar'
 import TableActions from './TableActions'
 import TextStyleSelects from './TextStyleSelects'
 import ToolButton from './ToolButton'
@@ -9,11 +13,34 @@ import { useToolbarState } from './useToolbarState'
 
 const alignments = ['left', 'center', 'right', 'justify'] as const
 
-/** The formatting toolbar, and the link and table bars it opens below itself. */
-export default function EditorToolbar({ editor }: { editor: Editor }) {
+/**
+ * The formatting toolbar, and the bars it opens below itself: link, find and replace, page
+ * setup, and table actions. ⌘F (Ctrl+F) opens find.
+ */
+export default function EditorToolbar({
+  editor,
+  outline,
+  onToggleOutline,
+}: {
+  editor: Editor
+  outline: boolean
+  onToggleOutline: () => void
+}) {
   const state = useToolbarState(editor)
   const [linkHref, setLinkHref] = useState<string | null>(null)
+  const [finding, setFinding] = useState(false)
+  const [pageSetup, setPageSetup] = useState(false)
   const chain = () => editor.chain().focus()
+  useEffect(() => {
+    const find = (event: KeyboardEvent) => {
+      if ((event.metaKey || event.ctrlKey) && !event.shiftKey && event.key.toLowerCase() === 'f') {
+        event.preventDefault()
+        setFinding(true)
+      }
+    }
+    window.addEventListener('keydown', find)
+    return () => window.removeEventListener('keydown', find)
+  }, [])
   return (
     <>
       <Toolbar className="editor-toolbar" aria-label="Document formatting">
@@ -56,6 +83,18 @@ export default function EditorToolbar({ editor }: { editor: Editor }) {
           run={() => chain().toggleStrike().run()}
           pressed={state.strike}
         />
+        <ToolButton
+          label="Superscript"
+          icon="lucide:superscript"
+          run={() => chain().toggleMark('superscript').run()}
+          pressed={state.superscript}
+        />
+        <ToolButton
+          label="Subscript"
+          icon="lucide:subscript"
+          run={() => chain().toggleMark('subscript').run()}
+          pressed={state.subscript}
+        />
         <label className="color-control" title="Text color">
           <span>A</span>
           <input
@@ -65,6 +104,7 @@ export default function EditorToolbar({ editor }: { editor: Editor }) {
             onChange={(e) => chain().setColor(e.target.value).run()}
           />
         </label>
+        <HighlightMenu editor={editor} current={state.highlight} />
         <ToolButton
           label="Clear formatting"
           icon="lucide:eraser"
@@ -95,6 +135,18 @@ export default function EditorToolbar({ editor }: { editor: Editor }) {
           pressed={state.ordered}
         />
         <ToolButton
+          label="Decrease indent"
+          icon="lucide:indent-decrease"
+          run={() => chain().liftListItem('listItem').run()}
+          disabled={!state.outdent}
+        />
+        <ToolButton
+          label="Increase indent"
+          icon="lucide:indent-increase"
+          run={() => chain().sinkListItem('listItem').run()}
+          disabled={!state.indent}
+        />
+        <ToolButton
           label="Insert or edit link"
           icon="lucide:link-2"
           run={() =>
@@ -104,20 +156,32 @@ export default function EditorToolbar({ editor }: { editor: Editor }) {
           }
           pressed={state.link}
         />
+        <InsertMenu editor={editor} />
+        <Separator orientation="vertical" />
         <ToolButton
-          label="Insert table"
-          icon="lucide:table-2"
-          run={() => chain().insertTable({ rows: 3, cols: 2, withHeaderRow: true }).run()}
+          label="Find and replace"
+          icon="lucide:search"
+          run={() => setFinding((open) => !open)}
+          pressed={finding}
         />
         <ToolButton
-          label="Horizontal rule"
-          icon="lucide:minus"
-          run={() => chain().setHorizontalRule().run()}
+          label="Outline"
+          icon="lucide:list-tree"
+          run={onToggleOutline}
+          pressed={outline}
+        />
+        <ToolButton
+          label="Page setup"
+          icon="lucide:ruler"
+          run={() => setPageSetup((open) => !open)}
+          pressed={pageSetup}
         />
       </Toolbar>
       {linkHref !== null && (
         <LinkForm editor={editor} initialHref={linkHref} onClose={() => setLinkHref(null)} />
       )}
+      {finding && <FindBar editor={editor} onClose={() => setFinding(false)} />}
+      {pageSetup && <PageSetupBar editor={editor} onClose={() => setPageSetup(false)} />}
       {state.table && <TableActions editor={editor} />}
     </>
   )

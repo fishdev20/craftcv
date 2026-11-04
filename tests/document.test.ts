@@ -132,6 +132,7 @@ it('keeps a validated page layout and top-level page breaks', () => {
     margins: [43.2, 43.2, 43.2, 43.2],
     lineHeight: 1.5,
     blockSpacing: null,
+    paragraphSpacing: null,
     listIndent: 24,
     fontSize: 11,
   })
@@ -171,4 +172,72 @@ it('exports an imported layout to Word: margins, line spacing and page breaks', 
   expect(xml).toContain('<w:pageBreakBefore/>')
   expect(xml).toContain('w:line="312"')
   expect(await zip.file('word/styles.xml')!.async('string')).toContain('w:val="20"')
+})
+
+it('keeps dated lines, super/subscript and paragraph spacing through validation and HTML', () => {
+  const entry = {
+    type: 'entryLine',
+    content: [
+      { type: 'entryStart', content: [{ type: 'text', text: 'Engineer, Acme' }] },
+      { type: 'entryEnd', content: [{ type: 'text', text: '2022 – Present' }] },
+    ],
+  }
+  const doc = {
+    type: 'doc',
+    attrs: { paragraphSpacing: 6 },
+    content: [
+      entry,
+      {
+        type: 'paragraph',
+        content: [
+          { type: 'text', text: 'E=mc' },
+          { type: 'text', text: '2', marks: [{ type: 'superscript' }] },
+          { type: 'text', text: ' H' },
+          { type: 'text', text: '2', marks: [{ type: 'subscript' }] },
+          { type: 'text', text: 'O' },
+        ],
+      },
+    ],
+  }
+  const parsed = parseDocument(doc)
+  expect(pageLayout(parsed).paragraphSpacing).toBe(6)
+  expect(layoutStyle(pageLayout(parsed))).toContain('--paragraph-space:6pt')
+  const html = documentHTML(parsed)
+  expect(html).toContain(
+    '<div class="entry-line"><span class="entry-start">Engineer, Acme</span><span class="entry-end">2022 – Present</span></div>',
+  )
+  expect(html).toContain('<sup>2</sup>')
+  expect(html).toContain('<sub>2</sub>')
+  // plain text keeps the two parts apart, as a reader or ATS would see them
+  expect(documentText(parsed)).toContain('Engineer, Acme\t2022 – Present')
+  // a dated line needs both parts, in order
+  expect(() =>
+    parseDocument({ type: 'doc', content: [{ ...entry, content: [entry.content[1]] }] }),
+  ).toThrow(/left and a right part/)
+})
+
+it('exports a dated line to Word as one paragraph with a right tab stop', async () => {
+  const doc = {
+    type: 'doc',
+    attrs: { margins: [36, 36, 36, 36] },
+    content: [
+      {
+        type: 'entryLine',
+        content: [
+          { type: 'entryStart', content: [{ type: 'text', text: 'Engineer' }] },
+          { type: 'entryEnd', content: [{ type: 'text', text: '2024' }] },
+        ],
+      },
+      {
+        type: 'paragraph',
+        content: [{ type: 'text', text: '2', marks: [{ type: 'superscript' }] }],
+      },
+    ],
+  }
+  const zip = await JSZip.loadAsync(await Packer.toBuffer(toWordDocument(doc)))
+  const xml = await zip.file('word/document.xml')!.async('string')
+  // the right edge of the text: A4 width less both margins, in twips
+  expect(xml).toContain(`w:val="right" w:pos="${Math.round((595.28 - 72) * 20)}"`)
+  expect(xml).toMatch(/Engineer<\/w:t><\/w:r><w:r><w:tab\/><\/w:r>/)
+  expect(xml).toContain('w:val="superscript"')
 })

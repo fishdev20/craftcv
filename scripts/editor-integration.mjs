@@ -41,7 +41,19 @@ try {
   const editor = page.getByRole('textbox', { name: 'Resume document', exact: true })
   await expect(editor).toContainText('Legacy imported experience')
   await page.getByRole('link', { name: 'Back to documents' }).click()
-  await page.getByRole('button', { name: 'New document', exact: true }).click()
+  await page.getByRole('button', { name: 'Use Standard ATS', exact: true }).click()
+  await expect(editor).toContainText('Professional summary')
+  await expect(page.getByRole('textbox', { name: 'Document title', exact: true })).toHaveValue(
+    'Standard ATS resume',
+  )
+  await page.getByRole('link', { name: 'Back to documents' }).click()
+  await page.getByRole('button', { name: "Use Jake's Resume", exact: true }).click()
+  await expect(editor).toContainText('EDUCATION')
+  await expect(page.getByRole('textbox', { name: 'Document title', exact: true })).toHaveValue(
+    "Jake's Resume CV",
+  )
+  await page.getByRole('link', { name: 'Back to documents' }).click()
+  await page.getByRole('button', { name: 'Blank document', exact: true }).click()
   await expect(editor).toBeVisible()
   await page.getByRole('textbox', { name: 'Document title', exact: true }).fill('Alex Developer CV')
   await editor.fill('Alex Developer')
@@ -69,7 +81,8 @@ try {
   await expect(editor.locator('ul li')).toContainText('Built accessible interfaces')
   await page.keyboard.press('Enter')
   await page.keyboard.press('Enter')
-  await page.getByRole('button', { name: 'Insert table', exact: true }).click()
+  await page.getByRole('button', { name: 'Insert', exact: true }).click()
+  await page.getByRole('menuitem', { name: /Table/ }).click()
   await expect(editor.locator('table')).toBeVisible()
   await editor.locator('th').first().click()
   await page.keyboard.type('Skills')
