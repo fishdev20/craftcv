@@ -4,7 +4,9 @@
 [![Security](https://github.com/fishdev20/craftcv/actions/workflows/security.yml/badge.svg)](https://github.com/fishdev20/craftcv/actions/workflows/security.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-0ea5e9.svg)](LICENSE)
 
-Local-first, evidence-backed CV tailoring for developers. MIT licensed.
+Local-first, evidence-backed CV tailoring for developers. Application code and CraftCV-original
+templates are MIT licensed; adapted third-party designs retain the licenses in
+[`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 Add a job by pasting it or importing its link, choose your CV and the projects whose code backs it, and CraftCV drafts CV lines that each cite the source they rest on. Every application is tracked on a board from Preparing to Offer. No API key is needed for the local workflow. Optional ChatGPT-plan, OpenAI API, and Anthropic API adapters can analyse the job, map projects, and refine drafts after explicit consent.
 
@@ -41,7 +43,7 @@ npm run package:linux:x64 # Linux x64 AppImage
 - Deterministic technical requirement matching against source, with incremental progress, cancellation, caps, and metadata-based cache reuse.
 - Local, cited bullet drafts; optional one-call structured cloud generation with Zod validation, timeouts, transient HTTP retries, cancellation, and token usage.
 - Editable suggestions, evidence-gated approval/rejection, persistent sessions, approved-bullet clipboard copy.
-- **Documents:** a local editor on A4 pages with rich text, headings, fonts, alignment, lists, links, tables, undo/redo, zoom, and autosave. Start blank or choose Standard ATS, Compact developer, Academic, or Modern accent from the visual template gallery. PDF imports keep their layout and page breaks; PDF and DOCX export keep the page layout.
+- **Documents:** a local editor on A4 pages with rich text, headings, fonts, alignment, lists, links, tables, undo/redo, zoom, and autosave. Start blank or choose from four CraftCV originals and all 13 editable [Rover Resume](https://github.com/subidit/rover-resume) adaptations in the visual template gallery. The Rover designs are CC BY 4.0; attribution and adaptation details are in `THIRD_PARTY_NOTICES.md`. PDF imports keep their layout and page breaks; PDF and DOCX export keep the page layout.
 - Estimated ATS relevance: fraction of extracted technical requirements represented in approved, source-backed bullets. **Not a vendor ATS score or hiring prediction.**
 - PDF, DOCX, Markdown, and text CV import.
 - API-key storage using Electron safeStorage backed by macOS Keychain, Windows DPAPI, or Linux Secret Service/KWallet. Linux's insecure `basic_text` fallback is refused.
@@ -125,7 +127,8 @@ committed.
 See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md),
 [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and [third-party notices](THIRD_PARTY_NOTICES.md).
 The `private: true` package metadata prevents accidental npm publication; it does not restrict the
-MIT-licensed source repository.
+MIT-licensed application source. Adapted third-party designs remain under the licenses listed in
+`THIRD_PARTY_NOTICES.md`.
 
 ## Importing microservices folders
 

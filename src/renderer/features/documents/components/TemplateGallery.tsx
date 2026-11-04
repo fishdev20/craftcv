@@ -47,6 +47,22 @@ export default function TemplateGallery({
     }
   }
 
+  const groups = [
+    {
+      id: 'craftcv',
+      name: 'CraftCV originals',
+      description: 'Simple starting points designed for CraftCV’s editor and export model.',
+      templates: documentTemplates.filter((template) => template.origin === 'craftcv'),
+    },
+    {
+      id: 'rover-resume',
+      name: 'Rover Resume collection',
+      description:
+        'Editable adaptations of every Rover Resume variant by Subidit, licensed CC BY 4.0.',
+      templates: documentTemplates.filter((template) => template.origin === 'rover-resume'),
+    },
+  ] as const
+
   return (
     <section className="document-templates" aria-labelledby="document-templates-title">
       <div className="document-section-heading">
@@ -57,29 +73,45 @@ export default function TemplateGallery({
           Choose a structure, then replace every prompt with your own evidence-backed content.
         </Typography.Paragraph>
       </div>
-      <div className="document-template-grid">
-        {documentTemplates.map((template) => (
-          <Card key={template.id}>
-            <TemplatePreview template={template} />
-            <Card.Header>
-              <Card.Title>{template.name}</Card.Title>
-              <Card.Description>{template.description}</Card.Description>
-            </Card.Header>
-            <Card.Footer>
-              <Button
-                fullWidth
-                aria-label={`Use ${template.name}`}
-                isDisabled={creating !== null && creating !== template.id}
-                isPending={creating === template.id}
-                onPress={() => void create(template.id)}
-                variant="outline"
-              >
-                Use template
-              </Button>
-            </Card.Footer>
-          </Card>
-        ))}
-      </div>
+      {groups.map((group) => (
+        <section
+          className="document-template-group"
+          aria-labelledby={`${group.id}-title`}
+          key={group.id}
+        >
+          <div className="document-template-group-heading">
+            <Typography.Heading level={3} id={`${group.id}-title`}>
+              {group.name}
+            </Typography.Heading>
+            <Typography.Paragraph size="xs" color="muted">
+              {group.description}
+            </Typography.Paragraph>
+          </div>
+          <div className="document-template-grid">
+            {group.templates.map((template) => (
+              <Card key={template.id}>
+                <TemplatePreview template={template} />
+                <Card.Header>
+                  <Card.Title>{template.name}</Card.Title>
+                  <Card.Description>{template.description}</Card.Description>
+                </Card.Header>
+                <Card.Footer>
+                  <Button
+                    fullWidth
+                    aria-label={`Use ${template.name}`}
+                    isDisabled={creating !== null && creating !== template.id}
+                    isPending={creating === template.id}
+                    onPress={() => void create(template.id)}
+                    variant="outline"
+                  >
+                    Use template
+                  </Button>
+                </Card.Footer>
+              </Card>
+            ))}
+          </div>
+        </section>
+      ))}
     </section>
   )
 }

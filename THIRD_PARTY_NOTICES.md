@@ -27,3 +27,18 @@ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPO
 NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES
 OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+## Rover Resume templates
+
+The templates named Base Rover, Star Rover, Fancy Rover, Milky Rover, Office Rover, Obsolete Rover,
+Academic Rover, and Week Rover are adapted from
+[Rover Resume](https://github.com/subidit/rover-resume) by
+[Subidit](https://github.com/subidit/), licensed under
+[Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/).
+
+CraftCV changes the original LaTeX templates into schema-validated, editable CraftCV documents,
+replaces the example personal information and claims with neutral prompts, and simplifies features
+that the current single-column editor cannot represent, including the Office Rover photo, footer
+page counters, icon glyphs, and some full-width rules and color treatments. These adaptations do not
+imply endorsement by the original creator. The adapted template designs remain available under CC BY
+4.0; CraftCV's original code and templates remain under the repository's MIT license.

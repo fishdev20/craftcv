@@ -1562,6 +1562,14 @@ textarea {
 .document-section-heading--saved {
   margin: 30px 0 8px;
 }
+.document-template-group + .document-template-group {
+  margin-top: 28px;
+}
+.document-template-group-heading {
+  display: grid;
+  gap: 3px;
+  margin-bottom: 12px;
+}
 .document-template-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));

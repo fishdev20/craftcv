@@ -47,6 +47,12 @@ try {
     'Standard ATS resume',
   )
   await page.getByRole('link', { name: 'Back to documents' }).click()
+  await page.getByRole('button', { name: 'Use Star Rover', exact: true }).click()
+  await expect(editor).toContainText('EDUCATION')
+  await expect(page.getByRole('textbox', { name: 'Document title', exact: true })).toHaveValue(
+    'Star Rover CV',
+  )
+  await page.getByRole('link', { name: 'Back to documents' }).click()
   await page.getByRole('button', { name: 'Blank document', exact: true }).click()
   await expect(editor).toBeVisible()
   await page.getByRole('textbox', { name: 'Document title', exact: true }).fill('Alex Developer CV')
