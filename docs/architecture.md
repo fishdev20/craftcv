@@ -38,8 +38,8 @@ src/renderer/
   common/
     api/                bridge() and unwrap(); app-wide calls (dashboard, cancel, progress)
     store/app-store.ts  dashboard, busy, progress, error, notice; action() and busyAction()
-    ui/                 Page, Loading, Logo, SelectField, ConfirmRemove, icons, and app copies of
-                        HeroUI Pro's Stepper, Kanban, ChainOfThought, TextShimmer, ChatLoader
+    ui/                 Page, Loading, Logo, SelectField, ConfirmRemove, icons, and CraftCV's
+                        Stepper, Kanban, analysis trace, shimmer, and loading primitives
     hairline/           vendored Hairline engine and the Press figure
   features/
     ai/                 provider choice hook, provider/model fields, consent

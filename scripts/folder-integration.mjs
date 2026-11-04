@@ -40,9 +40,7 @@ try {
   await expect(page.getByText('1/10 selected', { exact: true })).toBeVisible()
   await expect(page.locator('.project-choice small')).toContainText('6 services')
   await page.getByRole('button', { name: 'Import project folder', exact: true }).click()
-  await expect(page.getByRole('region', { name: /notifications/i })).toContainText(
-    '0 repositories added',
-  )
+  await expect(page.getByRole('alertdialog')).toContainText('0 repositories added')
   const data = await page.evaluate(() => window.craftcv.dashboard())
   if (!data.ok || data.value.repositories.length !== 6)
     throw new Error('Folder imports were not deduplicated')

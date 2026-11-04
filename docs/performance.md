@@ -26,12 +26,15 @@ The scan benchmark is a synthetic 500-file React fixture, not a large production
 npm run check
 npm run package:dir
 npm run measure
-CRAFTCV_EXECUTABLE="$PWD/release/mac-arm64/CraftCV.app/Contents/MacOS/CraftCV" node scripts/integration.mjs
-CRAFTCV_EXECUTABLE="$PWD/release/mac-arm64/CraftCV.app/Contents/MacOS/CraftCV" node scripts/benchmark.mjs
+npm run test:integration
+node scripts/benchmark.mjs
 npx electron-builder --mac dmg
 ```
 
-Reports and screenshots are written to `artifacts/`, which is excluded from version control and production packaging. For other platforms, set `CRAFTCV_EXECUTABLE` to the appropriate packaged executable. Omitting it launches the production build from the project directory instead.
+Reports and screenshots are written to `artifacts/`, which is excluded from version control and
+production packaging. These Playwright measurements run the production build from the project
+directory. Release packages disable Node inspector arguments through Electron fuses, so Playwright
+cannot attach to them; launch each packaged application separately for a startup smoke test.
 
 ## Validation performed
 

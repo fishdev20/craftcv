@@ -3,12 +3,7 @@ import { Disclosure } from '@heroui/react'
 import { Icon } from './icons'
 import TextShimmer from './TextShimmer'
 
-/*
- * A collapsible trace of what an assistant is doing, as a vertical timeline of steps; modelled
- * on HeroUI Pro's ChainOfThought (`@heroui-pro/react`, which this app does not use), on
- * HeroUI's Disclosure. `isStreaming` shimmers the trigger while the work goes on. Each step
- * may also carry a status, which this app adds to show which stage is running.
- */
+/* A CraftCV analysis trace composed from HeroUI Disclosure and semantic list elements. */
 
 const cx = (...names: (string | false | undefined)[]) => names.filter(Boolean).join(' ')
 

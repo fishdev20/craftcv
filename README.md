@@ -1,5 +1,9 @@
 # CraftCV
 
+[![CI](https://github.com/fishdev20/craftcv/actions/workflows/ci.yml/badge.svg)](https://github.com/fishdev20/craftcv/actions/workflows/ci.yml)
+[![Security](https://github.com/fishdev20/craftcv/actions/workflows/security.yml/badge.svg)](https://github.com/fishdev20/craftcv/actions/workflows/security.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-0ea5e9.svg)](LICENSE)
+
 Local-first, evidence-backed CV tailoring for developers. MIT licensed.
 
 Add a job by pasting it or importing its link, choose your CV and the projects whose code backs it, and CraftCV drafts CV lines that each cite the source they rest on. Every application is tracked on a board from Preparing to Offer. No API key is needed for the local workflow. Optional ChatGPT-plan, OpenAI API, and Anthropic API adapters can analyse the job, map projects, and refine drafts after explicit consent.
@@ -73,6 +77,11 @@ Packaged product-name conventions may capitalize the folder as `CraftCV`. SQLite
 
 Cloud requests send up to 12,000 job characters, 10,000 CV characters, and 24 relevant snippets of at most 1,200 characters each, with relative file paths. Secrets and common generated files are filtered as a precaution, **not a guarantee**. Inspect the preview before consenting. Provider retention and billing policies apply. OpenAI requests set `store: false`. API keys and ChatGPT OAuth tokens never go to the renderer after saving.
 
+For trust boundaries, packaged-runtime controls, and known limitations, read the
+[security model](docs/security-model.md). Report vulnerabilities through
+[GitHub's private vulnerability form](https://github.com/fishdev20/craftcv/security/advisories/new),
+never through a public issue.
+
 ## Engineering boundaries
 
 Source presence proves that a construct exists, not that the user authored it or achieved an outcome. Local drafts deliberately stay modest. Claim checks catch unknown references, unsupported vocabulary, quantified outcomes, and several ownership claims; they are heuristic, not semantic proof. Human review is required. Numeric achievements are conservatively blocked from approval in this MVP; add independently verified achievements to your original CV instead.
@@ -103,8 +112,9 @@ git push origin main v0.1.0
 
 The tag starts `.github/workflows/release.yml`. It validates the source, builds separate macOS
 Apple Silicon and Intel DMGs plus a Linux x64 AppImage, creates SHA-256 checksums, and attaches them
-to a draft GitHub Release. Download and test every installer before publishing the draft. Release
-assets remain private while this repository is private.
+to a draft GitHub Release. GitHub also records build-provenance attestations for each installer.
+Download and test every installer before publishing the draft. Verify a downloaded artifact with
+`gh attestation verify <installer> --repo fishdev20/craftcv` and compare it with `SHA256SUMS.txt`.
 
 Without Apple secrets, the workflow intentionally produces unsigned DMGs and adds a warning to the
 job. After `MAC_CSC_LINK`, `MAC_CSC_KEY_PASSWORD`, `APPLE_API_KEY`, `APPLE_API_KEY_ID`, and
@@ -112,7 +122,10 @@ job. After `MAC_CSC_LINK`, `MAC_CSC_KEY_PASSWORD`, `APPLE_API_KEY`, `APPLE_API_K
 the macOS builds automatically. Certificate and key files are ignored by Git and must never be
 committed.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md), and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md).
+See [CONTRIBUTING.md](CONTRIBUTING.md), [SECURITY.md](SECURITY.md),
+[CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), and [third-party notices](THIRD_PARTY_NOTICES.md).
+The `private: true` package metadata prevents accidental npm publication; it does not restrict the
+MIT-licensed source repository.
 
 ## Importing microservices folders
 

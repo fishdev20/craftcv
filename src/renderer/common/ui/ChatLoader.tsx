@@ -1,9 +1,6 @@
 import type { HTMLAttributes } from 'react'
 
-/*
- * A loading placeholder for an assistant's reply, modelled on HeroUI Pro's ChatLoader
- * (`@heroui-pro/react`, which this app does not use). Only its dots are needed here.
- */
+/* A minimal, decorative three-dot loading indicator. */
 
 function Dots({ className, ...props }: HTMLAttributes<HTMLDivElement>) {
   return (

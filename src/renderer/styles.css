@@ -169,7 +169,7 @@ h4,
   line-height: 1.4;
 }
 .app-shell {
-  /* HeroUI Pro's floating sidebar: detached from the window edge, rounded, with a shadow */
+  /* CraftCV's floating sidebar: detached from the window edge, rounded, with a shadow */
   --sidebar-width: 240px;
   --sidebar-width-collapsed: 56px;
   --sidebar-inset: 10px;
@@ -2225,7 +2225,7 @@ textarea {
   margin: 0 0 28px;
 }
 
-/* Stepper (common/ui/Stepper.tsx): HeroUI Pro's anatomy, drawn with HeroUI v3 tokens */
+/* Stepper (common/ui/Stepper.tsx), drawn with HeroUI v3 tokens */
 .stepper {
   --stepper-indicator-size: 28px;
   --stepper-separator-size: 2px;
@@ -2580,7 +2580,7 @@ textarea {
 }
 
 /* Applications: the tracker, one column per status */
-/* Kanban (common/ui/Kanban.tsx): HeroUI Pro's board, on HeroUI v3 tokens */
+/* Kanban (common/ui/Kanban.tsx), on HeroUI v3 tokens */
 .kanban {
   --kanban-column-min-width: 280px;
   --kanban-column-gap: 16px;
