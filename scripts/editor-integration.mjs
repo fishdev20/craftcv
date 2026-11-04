@@ -47,10 +47,10 @@ try {
     'Standard ATS resume',
   )
   await page.getByRole('link', { name: 'Back to documents' }).click()
-  await page.getByRole('button', { name: 'Use Star Rover', exact: true }).click()
+  await page.getByRole('button', { name: "Use Jake's Resume", exact: true }).click()
   await expect(editor).toContainText('EDUCATION')
   await expect(page.getByRole('textbox', { name: 'Document title', exact: true })).toHaveValue(
-    'Star Rover CV',
+    "Jake's Resume CV",
   )
   await page.getByRole('link', { name: 'Back to documents' }).click()
   await page.getByRole('button', { name: 'Blank document', exact: true }).click()
@@ -81,7 +81,8 @@ try {
   await expect(editor.locator('ul li')).toContainText('Built accessible interfaces')
   await page.keyboard.press('Enter')
   await page.keyboard.press('Enter')
-  await page.getByRole('button', { name: 'Insert table', exact: true }).click()
+  await page.getByRole('button', { name: 'Insert', exact: true }).click()
+  await page.getByRole('menuitem', { name: /Table/ }).click()
   await expect(editor.locator('table')).toBeVisible()
   await editor.locator('th').first().click()
   await page.keyboard.type('Skills')

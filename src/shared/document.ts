@@ -11,6 +11,7 @@ export type DocumentNode = {
 const blocks = [
   'paragraph',
   'heading',
+  'entryLine',
   'bulletList',
   'orderedList',
   'blockquote',
@@ -22,6 +23,10 @@ const children: Record<string, string[]> = {
   doc: [...blocks, 'pageBreak'],
   paragraph: ['text', 'hardBreak'],
   heading: ['text', 'hardBreak'],
+  // a line with a part on the left and a part flush right, such as a role and its dates
+  entryLine: ['entryStart', 'entryEnd'],
+  entryStart: ['text', 'hardBreak'],
+  entryEnd: ['text', 'hardBreak'],
   bulletList: ['listItem'],
   orderedList: ['listItem'],
   listItem: blocks,
@@ -51,6 +56,8 @@ type PageLayout = {
   listIndent: number
   /** The size body text is set in; text with no size of its own uses it. */
   fontSize: number
+  /** Space after each paragraph in an ordinary document; null keeps the editor's own. */
+  paragraphSpacing: number | null
 }
 
 /** A document's page layout, with the defaults for anything it does not set. */
@@ -67,6 +74,7 @@ export function pageLayout(document: DocumentNode): PageLayout {
     blockSpacing: typeof attrs.blockSpacing === 'number' ? attrs.blockSpacing : null,
     listIndent: number(attrs.listIndent, 24),
     fontSize: number(attrs.fontSize, 11),
+    paragraphSpacing: typeof attrs.paragraphSpacing === 'number' ? attrs.paragraphSpacing : null,
   }
 }
 
@@ -82,6 +90,7 @@ export function layoutStyle(layout: PageLayout): string {
     `--font-size:${layout.fontSize}pt`,
     `--list-indent:${layout.listIndent}pt`,
     ...(layout.blockSpacing === null ? [] : [`--block-space:${layout.blockSpacing}pt`]),
+    ...(layout.paragraphSpacing === null ? [] : [`--paragraph-space:${layout.paragraphSpacing}pt`]),
   ].join(';')
 }
 export function safeLink(value: string): boolean {
@@ -156,6 +165,8 @@ export function parseDocument(input: unknown): DocumentNode {
           attrs.blockSpacing = z.number().min(0).max(48).parse(a.blockSpacing)
         if (a.listIndent != null) attrs.listIndent = z.number().min(0).max(144).parse(a.listIndent)
         if (a.fontSize != null) attrs.fontSize = z.number().min(6).max(36).parse(a.fontSize)
+        if (a.paragraphSpacing != null)
+          attrs.paragraphSpacing = z.number().min(0).max(48).parse(a.paragraphSpacing)
       }
       if (Object.keys(attrs).length) out.attrs = attrs
     }
@@ -171,7 +182,18 @@ export function parseDocument(input: unknown): DocumentNode {
         if (!raw || typeof raw !== 'object') throw new Error('Invalid text formatting.')
         const mark = raw as Record<string, unknown>,
           kind = String(mark.type)
-        if (!['bold', 'italic', 'underline', 'strike', 'link', 'textStyle'].includes(kind))
+        if (
+          ![
+            'bold',
+            'italic',
+            'underline',
+            'strike',
+            'subscript',
+            'superscript',
+            'link',
+            'textStyle',
+          ].includes(kind)
+        )
           throw new Error('Unsupported formatting.')
         const attrs = (mark.attrs ?? {}) as Record<string, unknown>
         if (kind === 'link') {
@@ -228,6 +250,13 @@ export function parseDocument(input: unknown): DocumentNode {
       out.content?.[0]?.type !== 'paragraph'
     )
       throw new Error('List items and table cells must start with a paragraph.')
+    if (
+      type === 'entryLine' &&
+      (out.content?.length !== 2 ||
+        out.content[0].type !== 'entryStart' ||
+        out.content[1].type !== 'entryEnd')
+    )
+      throw new Error('A dated line needs a left and a right part.')
     if (type === 'tableRow' && (out.content?.length ?? 0) > 20)
       throw new Error('Tables support up to 20 columns.')
     return out
@@ -259,9 +288,9 @@ export function textDocument(text: string): DocumentNode {
 export function documentText(node: DocumentNode): string {
   if (node.type === 'text') return node.text ?? ''
   if (node.type === 'hardBreak') return '\n'
-  const separator = ['paragraph', 'heading'].includes(node.type)
+  const separator = ['paragraph', 'heading', 'entryStart', 'entryEnd'].includes(node.type)
     ? ''
-    : node.type === 'tableRow'
+    : ['tableRow', 'entryLine'].includes(node.type)
       ? '\t'
       : '\n'
   return (node.content ?? []).map(documentText).join(separator)
@@ -279,7 +308,14 @@ export function documentHTML(document: DocumentNode): string {
       let value = escape(node.text ?? '')
       for (const mark of node.marks ?? []) {
         const tag = (
-          { bold: 'strong', italic: 'em', underline: 'u', strike: 's' } as Record<string, string>
+          {
+            bold: 'strong',
+            italic: 'em',
+            underline: 'u',
+            strike: 's',
+            subscript: 'sub',
+            superscript: 'sup',
+          } as Record<string, string>
         )[mark.type]
         if (tag) value = `<${tag}>${value}</${tag}>`
         if (mark.type === 'link') value = `<a href="${escape(mark.attrs?.href ?? '')}">${value}</a>`
@@ -300,6 +336,9 @@ export function documentHTML(document: DocumentNode): string {
     if (node.type === 'pageBreak') return '<div class="page-break"></div>'
     if (node.type === 'horizontalRule') return '<hr>'
     const inner = (node.content ?? []).map(render).join('')
+    if (node.type === 'entryLine') return `<div class="entry-line">${inner}</div>`
+    if (node.type === 'entryStart') return `<span class="entry-start">${inner}</span>`
+    if (node.type === 'entryEnd') return `<span class="entry-end">${inner}</span>`
     if (node.type === 'doc') return inner
     const tag =
       node.type === 'heading'

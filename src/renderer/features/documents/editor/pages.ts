@@ -21,6 +21,7 @@ export const PagedDocument = Node.create({
       blockSpacing: { default: null },
       listIndent: { default: null },
       fontSize: { default: null },
+      paragraphSpacing: { default: null },
     }
   },
 })

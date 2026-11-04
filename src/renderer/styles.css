@@ -1562,42 +1562,91 @@ textarea {
 .document-section-heading--saved {
   margin: 30px 0 8px;
 }
-.document-template-group + .document-template-group {
-  margin-top: 28px;
-}
-.document-template-group-heading {
-  display: grid;
-  gap: 3px;
-  margin-bottom: 12px;
-}
 .document-template-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-  gap: 16px;
+  /* fixed-width cards, as many as fit, rather than cards stretched across the row */
+  grid-template-columns: repeat(auto-fill, 136px);
+  gap: 10px;
+}
+/* a small card that is itself the button: the page, then its name */
+.document-template-card {
+  position: relative;
+  display: grid;
+  gap: 7px;
+  padding: 7px 7px 9px;
+  border: 1px solid var(--border);
+  border-radius: var(--panel-radius);
+  background: var(--surface);
+  color: var(--foreground);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--motion-fast),
+    box-shadow var(--motion-fast),
+    transform var(--motion-fast);
+}
+.document-template-card:hover:not(:disabled) {
+  border-color: var(--accent);
+  box-shadow: 0 6px 18px oklch(12% 0.02 225 / 0.12);
+}
+.document-template-card:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.document-template-card:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 2px;
+}
+.document-template-card:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.document-template-name {
+  overflow: hidden;
+  padding: 0 2px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.document-template-credit {
+  margin-top: -5px;
+  padding: 0 2px;
+  color: var(--muted);
+  font-size: 0.68rem;
+}
+.document-template-pending {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: inherit;
+  background: color-mix(in oklch, var(--surface) 60%, transparent);
 }
 .document-template-preview {
   display: flex;
-  min-height: 326px;
   align-items: center;
   justify-content: center;
   overflow: hidden;
+  padding: 7px 0;
   border-radius: var(--radius);
   background: var(--surface-secondary);
 }
 .document-template-page {
   position: relative;
-  width: 216px;
-  height: 306px;
+  /* A4 at 0.151 scale */
+  width: 120px;
+  height: 170px;
   overflow: hidden;
   background: #fff;
-  box-shadow: 0 8px 24px oklch(12% 0.02 225 / 0.12);
+  box-shadow: 0 4px 14px oklch(12% 0.02 225 / 0.12);
 }
 .document-template-page-content {
   box-sizing: border-box;
   width: 210mm;
   min-height: 297mm;
   padding: var(--margin-top) var(--margin-right) var(--margin-bottom) var(--margin-left);
-  transform: scale(0.272);
+  transform: scale(0.1511);
   transform-origin: top left;
   pointer-events: none;
   user-select: none;
@@ -1845,7 +1894,7 @@ textarea {
   overflow-wrap: anywhere;
 }
 .rich-document p {
-  margin: 0 0 9pt;
+  margin: 0 0 var(--paragraph-space, 9pt);
   line-height: inherit;
   text-wrap: wrap;
 }
@@ -1898,6 +1947,35 @@ textarea {
   color: oklch(0.42 0.12 250);
   text-decoration: underline;
   cursor: text;
+}
+/* a dated line: its left part takes the room, its right part sits flush right */
+.rich-document .entry-line {
+  display: flex;
+  align-items: baseline;
+  gap: 12pt;
+  margin: 0 0 var(--paragraph-space, 9pt);
+}
+.rich-document[data-layout='exact'] .entry-line {
+  margin: 0 0 var(--block-space, 0);
+}
+.rich-document .entry-start {
+  flex: 1;
+  min-width: 0;
+}
+.rich-document .entry-end {
+  flex-shrink: 0;
+  text-align: right;
+  white-space: nowrap;
+}
+/* an empty part still takes a line, so the cursor can be placed in it */
+.rich-document .entry-start:empty::before,
+.rich-document .entry-end:empty::before {
+  content: '\200b';
+}
+.rich-document sup,
+.rich-document sub {
+  font-size: 0.75em;
+  line-height: 0;
 }
 .rich-document blockquote {
   margin: 12pt 20pt;
@@ -2024,6 +2102,8 @@ textarea {
 .editor-header,
 .editor-toolbar,
 .editor-link-form,
+.editor-find-bar,
+.editor-page-setup,
 .table-actions,
 .editor-statusbar {
   flex-shrink: 0;
@@ -2031,6 +2111,180 @@ textarea {
 .editor-canvas {
   min-height: 0;
   overflow: auto;
+}
+/* the outline sits beside the pages; the canvas keeps the scroll */
+.editor-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+.editor-body > .editor-canvas {
+  flex: 1;
+  min-width: 0;
+}
+.editor-outline {
+  flex: 0 0 220px;
+  overflow-y: auto;
+  padding: 16px 12px;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+}
+.editor-outline-title {
+  margin: 0 6px 10px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.editor-outline ul {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.editor-outline button {
+  display: block;
+  width: 100%;
+  padding: 5px 6px;
+  border: 0;
+  border-radius: var(--control-radius);
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  font-size: 0.8rem;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+.editor-outline button:hover {
+  background: var(--default);
+}
+.editor-outline li[data-level='2'] button {
+  padding-left: 16px;
+  color: var(--muted);
+}
+.editor-outline li[data-level='3'] button {
+  padding-left: 26px;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+.editor-outline > p {
+  margin: 0 6px;
+}
+
+/* find and replace, and page setup: bars under the toolbar, like the link form */
+.editor-find-bar,
+.editor-page-setup {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.editor-find-field {
+  width: 200px;
+}
+.editor-find-field .input {
+  height: 30px;
+  font-size: 0.8rem;
+}
+.editor-find-count {
+  min-width: 72px;
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-variant-numeric: tabular-nums;
+}
+.page-margins {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+}
+.page-margin-field {
+  width: 64px;
+}
+.page-margin-field .number-field__group {
+  height: 30px;
+}
+.page-margin-field .number-field__input {
+  padding-inline: 8px;
+  font-size: 0.8rem;
+}
+.page-margin-field .label {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.page-margins-unit {
+  padding-bottom: 7px;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+.editor-page-setup .page-setup-select {
+  width: 190px;
+}
+.editor-page-setup .page-setup-select--narrow {
+  width: 110px;
+}
+.editor-page-setup .label {
+  font-size: 0.72rem;
+  color: var(--muted);
+}
+.editor-page-setup > .button:last-child {
+  align-self: flex-end;
+  margin-left: auto;
+}
+.search-match {
+  background: oklch(90% 0.14 95 / 0.7);
+  border-radius: 2px;
+}
+.search-match--current {
+  background: oklch(78% 0.17 70);
+  box-shadow: 0 0 0 1px oklch(60% 0.16 60);
+}
+
+/* highlight and insert menus */
+.highlight-tool {
+  position: relative;
+}
+.highlight-tool-bar {
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  bottom: 4px;
+  height: 3px;
+  border-radius: 2px;
+}
+.highlight-swatch {
+  width: 14px;
+  height: 14px;
+  border: 1px solid oklch(0% 0 0 / 0.15);
+  border-radius: 3px;
+}
+.highlight-swatch--none {
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 1px),
+    var(--danger) 50%,
+    transparent calc(50% + 1px)
+  );
+}
+.editor-toolbar .insert-tool {
+  width: auto;
+  gap: 4px;
+  padding-inline: 8px;
+  font-size: 0.78rem;
+}
+.insert-item {
+  display: grid;
+}
+.insert-item small {
+  color: var(--muted);
+  font-size: 0.7rem;
 }
 /* Settings */
 .settings-group {

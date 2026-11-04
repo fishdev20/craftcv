@@ -8,6 +8,7 @@ import type { Resume } from '@shared/contracts'
 import { safeLink, type DocumentNode } from '@shared/document'
 import { saveDocument } from '../actions'
 import { editDraft } from '../drafts-store'
+import { EntryEnd, EntryLine, EntryStart, Search, Subscript, Superscript } from './extensions'
 import { PageBreak, PagedDocument, Pages } from './pages'
 
 /** The extensions the export model understands, and nothing more. */
@@ -21,11 +22,17 @@ const extensions = [
     link: { openOnClick: false, autolink: false, isAllowedUri: safeLink },
   }),
   TableKit.configure({ table: { resizable: false } }),
-  TextStyleKit.configure({ lineHeight: false, backgroundColor: false }),
+  TextStyleKit.configure({ lineHeight: false }),
   TextAlign.configure({ types: ['heading', 'paragraph'] }),
   PagedDocument,
   PageBreak,
   Pages,
+  Superscript,
+  Subscript,
+  EntryLine,
+  EntryStart,
+  EntryEnd,
+  Search,
 ]
 
 /** A Tiptap editor on the resume's draft, with Ctrl/⌘ S to save. */

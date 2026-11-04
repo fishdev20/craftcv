@@ -1,7 +1,19 @@
 import { useState } from 'react'
-import { Button, Card, Typography } from '@heroui/react'
+import { Spinner, Typography } from '@heroui/react'
 import { documentHTML, pageLayout } from '@shared/document'
-import { documentTemplates, type DocumentTemplate, type DocumentTemplateId } from '../templates'
+import {
+  documentTemplates,
+  type DocumentTemplate,
+  type DocumentTemplateId,
+  type DocumentTemplateOrigin,
+} from '../templates'
+
+/** Where each design comes from; the licences are in THIRD_PARTY_NOTICES.md. */
+const CREDITS: Record<DocumentTemplateOrigin, string> = {
+  craftcv: 'CraftCV',
+  'jakes-resume': "Jake's Resume · MIT",
+  rendercv: 'RenderCV · MIT',
+}
 
 function TemplatePreview({ template }: { template: DocumentTemplate }) {
   const document = template.createDocument()
@@ -47,22 +59,6 @@ export default function TemplateGallery({
     }
   }
 
-  const groups = [
-    {
-      id: 'craftcv',
-      name: 'CraftCV originals',
-      description: 'Simple starting points designed for CraftCV’s editor and export model.',
-      templates: documentTemplates.filter((template) => template.origin === 'craftcv'),
-    },
-    {
-      id: 'rover-resume',
-      name: 'Rover Resume collection',
-      description:
-        'Editable adaptations of every Rover Resume variant by Subidit, licensed CC BY 4.0.',
-      templates: documentTemplates.filter((template) => template.origin === 'rover-resume'),
-    },
-  ] as const
-
   return (
     <section className="document-templates" aria-labelledby="document-templates-title">
       <div className="document-section-heading">
@@ -73,45 +69,33 @@ export default function TemplateGallery({
           Choose a structure, then replace every prompt with your own evidence-backed content.
         </Typography.Paragraph>
       </div>
-      {groups.map((group) => (
-        <section
-          className="document-template-group"
-          aria-labelledby={`${group.id}-title`}
-          key={group.id}
-        >
-          <div className="document-template-group-heading">
-            <Typography.Heading level={3} id={`${group.id}-title`}>
-              {group.name}
-            </Typography.Heading>
-            <Typography.Paragraph size="xs" color="muted">
-              {group.description}
-            </Typography.Paragraph>
-          </div>
-          <div className="document-template-grid">
-            {group.templates.map((template) => (
-              <Card key={template.id}>
-                <TemplatePreview template={template} />
-                <Card.Header>
-                  <Card.Title>{template.name}</Card.Title>
-                  <Card.Description>{template.description}</Card.Description>
-                </Card.Header>
-                <Card.Footer>
-                  <Button
-                    fullWidth
-                    aria-label={`Use ${template.name}`}
-                    isDisabled={creating !== null && creating !== template.id}
-                    isPending={creating === template.id}
-                    onPress={() => void create(template.id)}
-                    variant="outline"
-                  >
-                    Use template
-                  </Button>
-                </Card.Footer>
-              </Card>
-            ))}
-          </div>
-        </section>
-      ))}
+      <div className="document-template-grid">
+        {documentTemplates.map((template) => (
+          // the whole card is the button: a preview of the page and its name
+          <button
+            key={template.id}
+            type="button"
+            className="document-template-card"
+            aria-label={`Use ${template.name}`}
+            // long names are cut short on the card; the tooltip has the whole name
+            title={`${template.name}: ${template.description}`}
+            disabled={creating !== null && creating !== template.id}
+            aria-busy={creating === template.id || undefined}
+            onClick={() => {
+              if (!creating) void create(template.id)
+            }}
+          >
+            <TemplatePreview template={template} />
+            <span className="document-template-name">{template.name}</span>
+            <span className="document-template-credit">{CREDITS[template.origin]}</span>
+            {creating === template.id && (
+              <span className="document-template-pending">
+                <Spinner size="sm" />
+              </span>
+            )}
+          </button>
+        ))}
+      </div>
     </section>
   )
 }

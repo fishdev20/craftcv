@@ -5,21 +5,18 @@ export type DocumentTemplateId =
   | 'compact-developer'
   | 'academic'
   | 'modern-accent'
-  | 'rover-base'
-  | 'rover-star'
-  | 'rover-fancy'
-  | 'rover-milky'
-  | 'rover-office'
-  | 'rover-obsolete'
-  | 'rover-academic'
-  | 'rover-academic-publications'
-  | 'rover-week-monday'
-  | 'rover-week-tuesday'
-  | 'rover-week-wednesday'
-  | 'rover-week-thursday'
-  | 'rover-week-sunday'
+  | 'jakes-resume'
+  | 'rendercv-classic'
+  | 'rendercv-sb2nov'
+  | 'rendercv-moderncv'
+  | 'rendercv-engineering-resumes'
+  | 'rendercv-engineering-classic'
+  | 'rendercv-harvard'
+  | 'rendercv-ink'
+  | 'rendercv-opal'
+  | 'rendercv-ember'
 
-export type DocumentTemplateOrigin = 'craftcv' | 'rover-resume'
+export type DocumentTemplateOrigin = 'craftcv' | 'jakes-resume' | 'rendercv'
 
 export type DocumentTemplate = {
   id: DocumentTemplateId
@@ -252,322 +249,303 @@ function modernAccent(): DocumentNode {
 }
 
 /**
- * Editable single-column adaptations of Subidit's Rover Resume LaTeX designs (CC BY 4.0).
- * Attribution and the complete modification notice ship in THIRD_PARTY_NOTICES.md.
+ * Editable single-column re-implementations of Jake's Resume and RenderCV's built-in themes
+ * (both MIT). Values follow each theme's source; fonts and sizes become the closest the
+ * editor offers, and small caps become upper case. Attribution and the full list of changes
+ * ship in THIRD_PARTY_NOTICES.md.
  */
-type RoverTheme = {
-  accent: string
-  bodyFont?: 'Arial' | 'Georgia' | 'Times New Roman' | 'Verdana'
+type Font = 'Arial' | 'Georgia' | 'Times New Roman' | 'Verdana'
+type SourceTheme = {
+  font: Font
+  /** A different face for the name, as Ember sets its name apart from the body. */
+  nameFont?: Font
   fontSize: number
-  headingFont?: 'Arial' | 'Georgia' | 'Times New Roman' | 'Verdana'
-  headingSize: string
-  lineHeight: number
   margins: [number, number, number, number]
-  nameAlign?: 'left' | 'center'
+  lineHeight: number
+  blockSpacing: number
+  /** Name, headline and section titles; contacts use `contactColor` when it differs. */
+  accent: string
+  contactColor?: string
   nameSize: string
+  nameAlign: 'left' | 'center'
+  nameUpper?: boolean
+  sectionSize: string
+  sectionAlign: 'left' | 'center'
+  sectionUpper?: boolean
   rule: 'before' | 'after' | 'none'
-  sectionCase?: 'title' | 'upper'
-  splitAccent?: boolean
+  separator: string
+  /** Dates and locations in italics (sb2nov). */
+  datesItalic?: boolean
+  /** The role on an italic line of its own under the organisation (Ink, Ember). */
+  roleOwnLine?: boolean
 }
 
-const roverThemes = {
-  base: {
-    accent: '#202020',
+const BLACK = '#000000'
+const inch = (value: number) => Math.round(value * 72 * 10) / 10
+const all = (value: number): [number, number, number, number] => [value, value, value, value]
+
+const sourceThemes = {
+  jakes: {
+    font: 'Times New Roman',
     fontSize: 10.5,
-    headingSize: '12pt',
-    lineHeight: 1.26,
-    margins: [54, 54, 54, 54],
-    nameAlign: 'center',
+    margins: [inch(0.5), inch(0.5), inch(0.5), inch(0.5)],
+    lineHeight: 1.2,
+    blockSpacing: 3,
+    accent: BLACK,
     nameSize: '24pt',
-    rule: 'after',
-    sectionCase: 'upper',
-  },
-  star: {
-    accent: '#141e61',
-    fontSize: 9.5,
-    headingSize: '12pt',
-    lineHeight: 1.22,
-    margins: [48, 54, 48, 54],
     nameAlign: 'center',
-    nameSize: '28pt',
-    rule: 'before',
-    sectionCase: 'upper',
-  },
-  fancy: {
-    accent: '#704214',
-    fontSize: 9.5,
-    headingFont: 'Verdana',
-    headingSize: '12pt',
-    lineHeight: 1.24,
-    margins: [43, 47, 43, 47],
-    nameAlign: 'center',
-    nameSize: '28pt',
+    nameUpper: true,
+    sectionSize: '12pt',
+    sectionAlign: 'left',
+    sectionUpper: true,
     rule: 'after',
-    sectionCase: 'upper',
+    separator: ' | ',
   },
-  milky: {
-    accent: '#303030',
-    bodyFont: 'Georgia',
+  classic: {
+    font: 'Arial',
     fontSize: 10,
-    headingFont: 'Arial',
-    headingSize: '10pt',
-    lineHeight: 1.34,
-    margins: [72, 90, 58, 90],
-    nameAlign: 'left',
-    nameSize: '24pt',
-    rule: 'before',
-    sectionCase: 'upper',
-  },
-  office: {
-    accent: '#0d47a1',
-    fontSize: 9.5,
-    headingSize: '12pt',
-    lineHeight: 1.24,
-    margins: [36, 46, 36, 46],
-    nameAlign: 'left',
-    nameSize: '24pt',
-    rule: 'none',
-    sectionCase: 'title',
-  },
-  obsolete: {
-    accent: '#666666',
-    fontSize: 9.5,
-    headingSize: '11pt',
+    margins: all(inch(0.7)),
     lineHeight: 1.25,
-    margins: [42, 46, 42, 46],
-    nameAlign: 'left',
-    nameSize: '24pt',
-    rule: 'after',
-    sectionCase: 'upper',
-  },
-  academic: {
-    accent: '#202020',
-    bodyFont: 'Times New Roman',
-    fontSize: 10.5,
-    headingFont: 'Times New Roman',
-    headingSize: '12pt',
-    lineHeight: 1.3,
-    margins: [58, 58, 58, 58],
+    blockSpacing: 4,
+    accent: '#004f90',
+    nameSize: '28pt',
     nameAlign: 'center',
-    nameSize: '20pt',
+    sectionSize: '14pt',
+    sectionAlign: 'left',
     rule: 'after',
-    sectionCase: 'upper',
+    separator: '   ',
   },
-  monday: {
-    accent: '#666666',
-    fontSize: 9.5,
-    headingSize: '18pt',
-    lineHeight: 1.22,
-    margins: [48, 54, 48, 54],
-    nameAlign: 'left',
-    nameSize: '24pt',
-    rule: 'none',
-    sectionCase: 'upper',
-  },
-  tuesday: {
-    accent: '#b42318',
-    fontSize: 9.5,
-    headingSize: '16pt',
-    lineHeight: 1.22,
-    margins: [48, 54, 48, 54],
-    nameAlign: 'left',
-    nameSize: '24pt',
-    rule: 'none',
-    sectionCase: 'title',
-    splitAccent: true,
-  },
-  wednesday: {
-    accent: '#728475',
-    fontSize: 9.5,
-    headingSize: '12pt',
-    lineHeight: 1.22,
-    margins: [48, 54, 48, 54],
-    nameAlign: 'center',
-    nameSize: '24pt',
-    rule: 'before',
-    sectionCase: 'upper',
-  },
-  thursday: {
-    accent: '#303030',
-    bodyFont: 'Georgia',
+  sb2nov: {
+    font: 'Times New Roman',
     fontSize: 10,
-    headingFont: 'Arial',
-    headingSize: '10pt',
-    lineHeight: 1.34,
-    margins: [60, 72, 52, 72],
-    nameAlign: 'left',
-    nameSize: '24pt',
-    rule: 'before',
-    sectionCase: 'upper',
-  },
-  sunday: {
-    accent: '#202020',
-    fontSize: 10,
-    headingSize: '12pt',
-    lineHeight: 1.28,
-    margins: [48, 54, 48, 54],
+    margins: all(inch(0.7)),
+    lineHeight: 1.25,
+    blockSpacing: 4,
+    accent: BLACK,
+    nameSize: '28pt',
     nameAlign: 'center',
-    nameSize: '24pt',
+    sectionSize: '14pt',
+    sectionAlign: 'left',
     rule: 'after',
-    sectionCase: 'upper',
+    separator: ' • ',
+    datesItalic: true,
   },
-} satisfies Record<string, RoverTheme>
+  moderncv: {
+    font: 'Georgia',
+    fontSize: 10,
+    margins: all(inch(0.7)),
+    lineHeight: 1.25,
+    blockSpacing: 4,
+    accent: '#004f90',
+    nameSize: '24pt',
+    nameAlign: 'left',
+    sectionSize: '14pt',
+    sectionAlign: 'left',
+    rule: 'before',
+    separator: '   ',
+  },
+  engineeringResumes: {
+    font: 'Georgia',
+    fontSize: 10,
+    margins: all(inch(0.7)),
+    lineHeight: 1.2,
+    blockSpacing: 3,
+    accent: BLACK,
+    nameSize: '24pt',
+    nameAlign: 'center',
+    sectionSize: '12pt',
+    sectionAlign: 'left',
+    rule: 'after',
+    separator: ' | ',
+  },
+  engineeringClassic: {
+    font: 'Arial',
+    fontSize: 10,
+    margins: all(inch(0.7)),
+    lineHeight: 1.25,
+    blockSpacing: 4,
+    accent: '#004f90',
+    nameSize: '28pt',
+    nameAlign: 'left',
+    sectionSize: '14pt',
+    sectionAlign: 'left',
+    rule: 'after',
+    separator: '   ',
+  },
+  harvard: {
+    font: 'Georgia',
+    fontSize: 10,
+    margins: all(inch(0.5)),
+    lineHeight: 1.22,
+    blockSpacing: 3,
+    accent: BLACK,
+    nameSize: '24pt',
+    nameAlign: 'center',
+    sectionSize: '12pt',
+    sectionAlign: 'center',
+    rule: 'after',
+    separator: ' • ',
+  },
+  ink: {
+    font: 'Georgia',
+    fontSize: 10,
+    margins: all(inch(0.6)),
+    lineHeight: 1.22,
+    blockSpacing: 3,
+    accent: '#2a1852',
+    contactColor: '#46326e',
+    nameSize: '32pt',
+    nameAlign: 'left',
+    sectionSize: '14pt',
+    sectionAlign: 'left',
+    sectionUpper: true,
+    rule: 'none',
+    separator: ' | ',
+    roleOwnLine: true,
+  },
+  opal: {
+    font: 'Verdana',
+    fontSize: 9.5,
+    margins: all(inch(0.65)),
+    lineHeight: 1.25,
+    blockSpacing: 4,
+    accent: '#00645a',
+    contactColor: '#005048',
+    nameSize: '24pt',
+    nameAlign: 'center',
+    sectionSize: '12pt',
+    sectionAlign: 'center',
+    sectionUpper: true,
+    rule: 'none',
+    separator: ' • ',
+  },
+  ember: {
+    font: 'Arial',
+    nameFont: 'Georgia',
+    fontSize: 10,
+    margins: all(inch(0.6)),
+    lineHeight: 1.25,
+    blockSpacing: 4,
+    accent: '#9b2319',
+    contactColor: '#644b44',
+    nameSize: '28pt',
+    nameAlign: 'center',
+    sectionSize: '12pt',
+    sectionAlign: 'center',
+    sectionUpper: true,
+    rule: 'none',
+    separator: ' · ',
+    roleOwnLine: true,
+  },
+} satisfies Record<string, SourceTheme>
 
-function roverText(
-  value: string,
-  theme: RoverTheme,
-  options: { bold?: boolean; color?: string; fontSize?: string; italic?: boolean } = {},
-) {
-  const marks: DocumentMark[] = []
-  if (options.bold) marks.push({ type: 'bold' })
-  if (options.italic) marks.push({ type: 'italic' })
-  return styled(
-    value,
-    {
-      ...(theme.bodyFont ? { fontFamily: theme.bodyFont } : {}),
-      ...(options.color ? { color: options.color } : {}),
-      ...(options.fontSize ? { fontSize: options.fontSize } : {}),
-    },
-    marks,
-  )
-}
-
-function roverBulletList(items: string[], theme: RoverTheme): DocumentNode {
-  return {
-    type: 'bulletList',
-    content: items.map((item) => ({
-      type: 'listItem',
-      content: [paragraph([roverText(item, theme)])],
-    })),
-  }
-}
-
-function roverSection(title: string, theme: RoverTheme): DocumentNode[] {
-  const label = theme.sectionCase === 'upper' ? title.toUpperCase() : title
-  const style = {
-    color: theme.accent,
-    fontSize: theme.headingSize,
-    ...(theme.headingFont ? { fontFamily: theme.headingFont } : {}),
-  }
-  const content = theme.splitAccent
-    ? [styled(label.slice(0, 3), style), styled(label.slice(3), { ...style, color: '#202020' })]
-    : [styled(label, style)]
-  const headingNode: DocumentNode = { type: 'heading', attrs: { level: 2 }, content }
-  return [
-    ...(theme.rule === 'before' ? [{ type: 'horizontalRule' } as DocumentNode] : []),
-    headingNode,
-    ...(theme.rule === 'after' ? [{ type: 'horizontalRule' } as DocumentNode] : []),
-  ]
-}
-
-function roverHeader(theme: RoverTheme): DocumentNode[] {
-  return [
-    {
+function sourceResume(theme: SourceTheme): DocumentNode {
+  const body = (value: string, marks: DocumentMark[] = []) =>
+    styled(value, { fontFamily: theme.font }, marks)
+  const dates = (value: string) =>
+    theme.datesItalic ? body(value, [{ type: 'italic' }]) : body(value)
+  const section = (title: string): DocumentNode[] => {
+    const heading: DocumentNode = {
       type: 'heading',
-      attrs: { level: 1, textAlign: theme.nameAlign ?? 'left' },
+      attrs: { level: 2, textAlign: theme.sectionAlign },
       content: [
-        styled('Your name', {
+        styled(theme.sectionUpper ? title.toUpperCase() : title, {
+          fontFamily: theme.font,
+          fontSize: theme.sectionSize,
           color: theme.accent,
-          fontSize: theme.nameSize,
-          ...(theme.headingFont ? { fontFamily: theme.headingFont } : {}),
         }),
       ],
-    },
-    paragraph(
-      [roverText('Professional title | City, Country', theme, { italic: true })],
-      theme.nameAlign ?? 'left',
-    ),
-    paragraph(
-      [roverText('email@example.com | +00 000 000 000 | portfolio.example', theme)],
-      theme.nameAlign ?? 'left',
-    ),
+    }
+    const rule: DocumentNode = { type: 'horizontalRule' }
+    return [
+      ...(theme.rule === 'before' ? [rule] : []),
+      heading,
+      ...(theme.rule === 'after' ? [rule] : []),
+    ]
+  }
+  const datedLine = (start: DocumentNode[], end: DocumentNode[]): DocumentNode => ({
+    type: 'entryLine',
+    content: [
+      { type: 'entryStart', content: start },
+      { type: 'entryEnd', content: end },
+    ],
+  })
+  const entry = (
+    organisation: string,
+    role: string,
+    place: string,
+    when: string,
+  ): DocumentNode[] =>
+    theme.roleOwnLine
+      ? [
+          datedLine([body(organisation, [{ type: 'bold' }])], [dates(`${place} | ${when}`)]),
+          paragraph([body(role, [{ type: 'italic' }])]),
+        ]
+      : [
+          datedLine(
+            [body(`${role}, ${organisation}`, [{ type: 'bold' }])],
+            [dates(`${place} | ${when}`)],
+          ),
+        ]
+  const bullets = (items: string[]): DocumentNode => ({
+    type: 'bulletList',
+    content: items.map((item) => ({ type: 'listItem', content: [paragraph([body(item)])] })),
+  })
+  const contacts = [
+    'email@example.com',
+    '+00 000 000 000',
+    'linkedin.com/in/username',
+    'github.com/username',
   ]
-}
-
-function roverResume(theme: RoverTheme): DocumentNode {
   return {
     type: 'doc',
     attrs: {
       margins: theme.margins,
       lineHeight: theme.lineHeight,
-      blockSpacing: theme.lineHeight > 1.3 ? 6 : 4,
-      listIndent: 20,
+      blockSpacing: theme.blockSpacing,
+      listIndent: 18,
       fontSize: theme.fontSize,
     },
     content: [
-      ...roverHeader(theme),
-      ...roverSection('Education', theme),
-      paragraph([
-        roverText('University name', theme, { bold: true }),
-        roverText(' | Degree or qualification | 2024', theme),
-      ]),
-      paragraph([roverText('Relevant coursework, distinction, or academic focus.', theme)]),
-      ...roverSection('Experience', theme),
-      paragraph([
-        roverText('Company name', theme, { bold: true }),
-        roverText(' | City, Country', theme),
-      ]),
-      paragraph([
-        roverText('Role title', theme, { italic: true }),
-        roverText(' | 2022-Present', theme),
-      ]),
-      roverBulletList(
-        [
-          'Describe a relevant responsibility and the result it produced.',
-          'Add a second contribution supported by evidence from your work.',
+      {
+        type: 'heading',
+        attrs: { level: 1, textAlign: theme.nameAlign },
+        content: [
+          styled(theme.nameUpper ? 'YOUR NAME' : 'Your name', {
+            fontFamily: theme.nameFont ?? theme.font,
+            fontSize: theme.nameSize,
+            color: theme.accent,
+          }),
         ],
-        theme,
+      },
+      paragraph(
+        [
+          styled(contacts.join(theme.separator), {
+            fontFamily: theme.font,
+            color: theme.contactColor ?? theme.accent,
+          }),
+        ],
+        theme.nameAlign,
       ),
-      ...roverSection('Skills', theme),
-      paragraph([
-        roverText('Languages: ', theme, { bold: true }),
-        roverText('Add languages | Frameworks: Add frameworks | Tools: Add tools', theme),
+      ...section('Education'),
+      ...entry('University name', 'Degree or qualification', 'City, Country', '2018–2022'),
+      bullets(['Relevant coursework, thesis, or distinction.']),
+      ...section('Experience'),
+      ...entry('Company name', 'Role title', 'City, Country', '2022–Present'),
+      bullets([
+        'Describe a relevant responsibility and the result it produced.',
+        'Add a second contribution supported by evidence from your work.',
       ]),
-      ...roverSection('Projects', theme),
+      ...entry('Earlier company', 'Earlier role', 'City, Country', '2020–2022'),
+      bullets(['Keep the most relevant contribution from this role.']),
+      ...section('Projects'),
+      paragraph([body('Project name', [{ type: 'bold' }]), dates(' | Technologies | Link')]),
+      bullets(['State the problem, your implementation, and an outcome you can verify.']),
+      ...section('Skills'),
+      paragraph([body('Languages: ', [{ type: 'bold' }]), body('Add languages')]),
       paragraph([
-        roverText('Project name', theme, { bold: true }),
-        roverText(' | Technologies | Link', theme),
-      ]),
-      roverBulletList(
-        ['State the problem, your implementation, and an outcome you can verify.'],
-        theme,
-      ),
-      ...roverSection('Certifications and awards', theme),
-      paragraph([roverText('Certification or award | Issuer | Year', theme)]),
-    ],
-  }
-}
-
-function roverAcademicPublications(): DocumentNode {
-  const theme = roverThemes.academic
-  return {
-    type: 'doc',
-    attrs: {
-      margins: theme.margins,
-      lineHeight: 1.35,
-      blockSpacing: 7,
-      listIndent: 20,
-      fontSize: 10.5,
-    },
-    content: [
-      ...roverHeader(theme),
-      ...roverSection('Research publications', theme),
-      paragraph([
-        roverText('Author name. ', theme, { bold: true }),
-        roverText('Publication title. Journal or conference, year.', theme),
-      ]),
-      paragraph([
-        roverText('Author name. ', theme, { bold: true }),
-        roverText('Publication title. Journal or conference, year.', theme),
-      ]),
-      ...roverSection('Selected presentations', theme),
-      paragraph([roverText('Presentation title | Event | Year', theme)]),
-      ...roverSection('Research interests', theme),
-      paragraph([roverText('Add methods, domains, and questions relevant to your work.', theme)]),
-      ...roverSection('Education', theme),
-      paragraph([
-        roverText('Degree or qualification', theme, { bold: true }),
-        roverText(' | Institution | Year', theme),
+        body('Frameworks and tools: ', [{ type: 'bold' }]),
+        body('Add frameworks and tools'),
       ]),
     ],
   }
@@ -607,108 +585,84 @@ export const documentTemplates: DocumentTemplate[] = [
     createDocument: modernAccent,
   },
   {
-    id: 'rover-base',
-    name: 'Base Rover',
-    description: 'A minimal one-page structure with ruled uppercase sections.',
-    documentName: 'Base Rover CV',
-    origin: 'rover-resume',
-    createDocument: () => roverResume(roverThemes.base),
+    id: 'jakes-resume',
+    name: "Jake's Resume",
+    description: 'The widely used one-page developer CV: serif, centred name, ruled sections.',
+    documentName: "Jake's Resume CV",
+    origin: 'jakes-resume',
+    createDocument: () => sourceResume(sourceThemes.jakes),
   },
   {
-    id: 'rover-star',
-    name: 'Star Rover',
-    description: 'A compact navy-accent layout with strong name hierarchy.',
-    documentName: 'Star Rover CV',
-    origin: 'rover-resume',
-    createDocument: () => roverResume(roverThemes.star),
+    id: 'rendercv-classic',
+    name: 'Classic',
+    description: 'Clean sans-serif with a blue name and section titles.',
+    documentName: 'RenderCV Classic CV',
+    origin: 'rendercv',
+    createDocument: () => sourceResume(sourceThemes.classic),
   },
   {
-    id: 'rover-fancy',
-    name: 'Fancy Rover',
-    description: 'A dense sepia-accent layout with a bold display header.',
-    documentName: 'Fancy Rover CV',
-    origin: 'rover-resume',
-    createDocument: () => roverResume(roverThemes.fancy),
+    id: 'rendercv-sb2nov',
+    name: 'sb2nov',
+    description: 'Black-and-white serif with ruled sections and italic dates.',
+    documentName: 'RenderCV sb2nov CV',
+    origin: 'rendercv',
+    createDocument: () => sourceResume(sourceThemes.sb2nov),
   },
   {
-    id: 'rover-milky',
-    name: 'Milky Rover',
-    description: 'A wide-margin serif layout with restrained typographic sections.',
-    documentName: 'Milky Rover CV',
-    origin: 'rover-resume',
-    createDocument: () => roverResume(roverThemes.milky),
+    id: 'rendercv-moderncv',
+    name: 'ModernCV',
+    description: 'A left-aligned blue name with a rule leading into each section.',
+    documentName: 'RenderCV ModernCV CV',
+    origin: 'rendercv',
+    createDocument: () => sourceResume(sourceThemes.moderncv),
   },
   {
-    id: 'rover-office',
-    name: 'Office Rover',
-    description: 'A blue-accent professional layout adapted without the original photo.',
-    documentName: 'Office Rover CV',
-    origin: 'rover-resume',
-    createDocument: () => roverResume(roverThemes.office),
+    id: 'rendercv-engineering-resumes',
+    name: 'Engineering Resumes',
+    description: 'A compact black serif layout with pipe-separated contacts.',
+    documentName: 'RenderCV Engineering Resumes CV',
+    origin: 'rendercv',
+    createDocument: () => sourceResume(sourceThemes.engineeringResumes),
   },
   {
-    id: 'rover-obsolete',
-    name: 'Obsolete Rover',
-    description: 'A restrained gray layout adapted to CraftCV’s single-column editor.',
-    documentName: 'Obsolete Rover CV',
-    origin: 'rover-resume',
-    createDocument: () => roverResume(roverThemes.obsolete),
+    id: 'rendercv-engineering-classic',
+    name: 'Engineering Classic',
+    description: 'A left-aligned blue sans-serif layout with full-width rules.',
+    documentName: 'RenderCV Engineering Classic CV',
+    origin: 'rendercv',
+    createDocument: () => sourceResume(sourceThemes.engineeringClassic),
   },
   {
-    id: 'rover-academic',
-    name: 'Academic Rover',
-    description: 'A traditional research CV for education, work, and selected publications.',
-    documentName: 'Academic Rover CV',
-    origin: 'rover-resume',
-    createDocument: () => roverResume(roverThemes.academic),
+    id: 'rendercv-harvard',
+    name: 'Harvard',
+    description: 'Traditional and dense: centred name and centred, ruled sections.',
+    documentName: 'RenderCV Harvard CV',
+    origin: 'rendercv',
+    createDocument: () => sourceResume(sourceThemes.harvard),
   },
   {
-    id: 'rover-academic-publications',
-    name: 'Academic Rover: publications',
-    description: 'A publication-led academic CV for longer research records.',
-    documentName: 'Academic Rover publications CV',
-    origin: 'rover-resume',
-    createDocument: roverAcademicPublications,
+    id: 'rendercv-ink',
+    name: 'Ink',
+    description: 'A literary serif in deep purple, with the role on its own italic line.',
+    documentName: 'RenderCV Ink CV',
+    origin: 'rendercv',
+    createDocument: () => sourceResume(sourceThemes.ink),
   },
   {
-    id: 'rover-week-monday',
-    name: 'Week Rover: Monday',
-    description: 'Oversized gray section titles with compact supporting text.',
-    documentName: 'Week Rover Monday CV',
-    origin: 'rover-resume',
-    createDocument: () => roverResume(roverThemes.monday),
+    id: 'rendercv-opal',
+    name: 'Opal',
+    description: 'A calm teal layout with centred, unruled section titles.',
+    documentName: 'RenderCV Opal CV',
+    origin: 'rendercv',
+    createDocument: () => sourceResume(sourceThemes.opal),
   },
   {
-    id: 'rover-week-tuesday',
-    name: 'Week Rover: Tuesday',
-    description: 'Editorial section headings with a red opening accent.',
-    documentName: 'Week Rover Tuesday CV',
-    origin: 'rover-resume',
-    createDocument: () => roverResume(roverThemes.tuesday),
-  },
-  {
-    id: 'rover-week-wednesday',
-    name: 'Week Rover: Wednesday',
-    description: 'A muted sage layout with centered identity and compact rules.',
-    documentName: 'Week Rover Wednesday CV',
-    origin: 'rover-resume',
-    createDocument: () => roverResume(roverThemes.wednesday),
-  },
-  {
-    id: 'rover-week-thursday',
-    name: 'Week Rover: Thursday',
-    description: 'A spacious serif layout with small typographic section labels.',
-    documentName: 'Week Rover Thursday CV',
-    origin: 'rover-resume',
-    createDocument: () => roverResume(roverThemes.thursday),
-  },
-  {
-    id: 'rover-week-sunday',
-    name: 'Week Rover: Sunday',
-    description: 'A balanced classic layout with ruled uppercase sections.',
-    documentName: 'Week Rover Sunday CV',
-    origin: 'rover-resume',
-    createDocument: () => roverResume(roverThemes.sunday),
+    id: 'rendercv-ember',
+    name: 'Ember',
+    description: 'A warm red serif name over a clean sans-serif body.',
+    documentName: 'RenderCV Ember CV',
+    origin: 'rendercv',
+    createDocument: () => sourceResume(sourceThemes.ember),
   },
 ]
 
