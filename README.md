@@ -41,7 +41,7 @@ npm run package:linux:x64 # Linux x64 AppImage
 - Deterministic technical requirement matching against source, with incremental progress, cancellation, caps, and metadata-based cache reuse.
 - Local, cited bullet drafts; optional one-call structured cloud generation with Zod validation, timeouts, transient HTTP retries, cancellation, and token usage.
 - Editable suggestions, evidence-gated approval/rejection, persistent sessions, approved-bullet clipboard copy.
-- **Documents:** a local editor on A4 pages with rich text, headings, fonts, alignment, lists, links, tables, undo/redo, zoom, and autosave. PDF imports keep their layout and page breaks; PDF and DOCX export keep the page layout.
+- **Documents:** a local editor on A4 pages with rich text, headings, fonts, alignment, lists, links, tables, undo/redo, zoom, and autosave. Start blank or choose the built-in Standard ATS or Compact developer template. PDF imports keep their layout and page breaks; PDF and DOCX export keep the page layout.
 - Estimated ATS relevance: fraction of extracted technical requirements represented in approved, source-backed bullets. **Not a vendor ATS score or hiring prediction.**
 - PDF, DOCX, Markdown, and text CV import.
 - API-key storage using Electron safeStorage backed by macOS Keychain, Windows DPAPI, or Linux Secret Service/KWallet. Linux's insecure `basic_text` fallback is refused.
@@ -57,7 +57,7 @@ A first launch opens a short welcome and a setup checklist; **Settings → Getti
 4. **Choose your projects.** Add a project folder with a `.git` repository, or a parent folder such as `kaira/` containing service repositories. Up to 10 projects and 25 repositories can be in the library. Folders containing no Git repositories are not supported.
 5. **Review.** CraftCV matches the job against your projects locally. Open each suggestion's evidence, edit the wording, and approve or reject it. Optionally refine the drafts with a connected provider after inspecting the bounded source preview and consenting.
 6. Copy approved bullets, export from review, or choose **Open in editor** to create a separate, editable CV with your CV and approved bullets. **Mark as applied** moves the application along the tracker.
-7. Use **Applications** to follow each application and **Documents** to reopen CVs. Autosave runs after 600 ms of inactivity; Ctrl/⌘ S saves immediately.
+7. Use **Applications** to follow each application and **Documents** to reopen CVs or create a new one from a starter template. Autosave runs after 600 ms of inactivity; Ctrl/⌘ S saves immediately.
 
 The document editor works entirely locally; it is not connected to Google Docs. It does not include collaboration, comments, tracked changes, version history, or images. Undo/redo history lasts while the editor is open. Manual edits are user-authored and are not automatically evidence-validated.
 

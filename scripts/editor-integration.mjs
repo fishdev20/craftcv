@@ -42,6 +42,14 @@ try {
   await expect(editor).toContainText('Legacy imported experience')
   await page.getByRole('link', { name: 'Back to documents' }).click()
   await page.getByRole('button', { name: 'New document', exact: true }).click()
+  await page.getByRole('menuitem', { name: /Standard ATS/ }).click()
+  await expect(editor).toContainText('Professional summary')
+  await expect(page.getByRole('textbox', { name: 'Document title', exact: true })).toHaveValue(
+    'Standard ATS resume',
+  )
+  await page.getByRole('link', { name: 'Back to documents' }).click()
+  await page.getByRole('button', { name: 'New document', exact: true }).click()
+  await page.getByRole('menuitem', { name: /Blank document/ }).click()
   await expect(editor).toBeVisible()
   await page.getByRole('textbox', { name: 'Document title', exact: true }).fill('Alex Developer CV')
   await editor.fill('Alex Developer')

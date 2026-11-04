@@ -4,8 +4,10 @@ import { Button, EmptyState, Typography } from '@heroui/react'
 import { Icon } from '@/common/ui/icons'
 import Page from '@/common/ui/Page'
 import { refreshDashboard, useAppStore } from '@/common/store/app-store'
-import { createDocument, importDocument } from './actions'
+import { createDocument, createDocumentFromTemplate, importDocument } from './actions'
 import DocumentRow from './components/DocumentRow'
+import NewDocumentMenu from './components/NewDocumentMenu'
+import type { DocumentTemplateId } from './templates'
 
 export default function DocumentsPage() {
   const resumes = useAppStore((s) => s.dashboard?.resumes)
@@ -16,17 +18,13 @@ export default function DocumentsPage() {
   const open = (resume: { id: string } | null | undefined) => {
     if (resume) navigate(`/documents/${resume.id}`)
   }
-  const create = () => void createDocument().then(open)
+  const create = (choice: 'blank' | DocumentTemplateId) =>
+    void (choice === 'blank' ? createDocument() : createDocumentFromTemplate(choice)).then(open)
   return (
     <Page
       title="Documents"
       description="Write, format, and export local CV documents."
-      actions={
-        <Button onClick={create}>
-          <Icon icon="lucide:plus" width={16} />
-          New document
-        </Button>
-      }
+      actions={<NewDocumentMenu onCreate={create} />}
     >
       <div className="document-list-tools">
         <Button variant="outline" onClick={() => void importDocument().then(open)}>
@@ -45,7 +43,7 @@ export default function DocumentsPage() {
             <Typography.Paragraph size="sm">
               Create a blank document, import a CV, or open approved suggestions in the editor.
             </Typography.Paragraph>
-            <Button onClick={create}>Create your first document</Button>
+            <NewDocumentMenu label="Create your first document" onCreate={create} />
           </EmptyState>
         ) : (
           resumes.map((resume) => <DocumentRow key={resume.id} id={resume.id} name={resume.name} />)
