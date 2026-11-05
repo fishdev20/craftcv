@@ -45,7 +45,7 @@ export default function WorkspacePage() {
       }
       actions={
         title && (
-          <Button variant="outline" size="sm" isDisabled={busy} onPress={startOver}>
+          <Button size="sm" isDisabled={busy} onPress={startOver}>
             <Icon icon="lucide:plus" width={14} />
             New application
           </Button>
