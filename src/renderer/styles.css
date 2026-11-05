@@ -1150,27 +1150,6 @@ textarea {
 .project-card .project-card-tree > .repo-tree {
   margin-left: 24px;
 }
-.project-card-status {
-  gap: 5px;
-  flex-shrink: 0;
-}
-.project-card-content {
-  gap: 14px;
-  padding: 0 18px 16px;
-}
-.project-card-summary p {
-  margin: 0;
-  max-width: 78ch;
-  color: var(--ink);
-  font-size: 0.84rem;
-  line-height: 1.6;
-}
-.project-card-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-top: 10px;
-}
 /* a file-tree: each level hangs off a guide line, each row off a short tick */
 .repo-tree {
   margin: 0;
@@ -1264,96 +1243,6 @@ textarea {
 }
 .repo-tree-group .disclosure__body {
   padding: 0;
-}
-.project-card-footer {
-  display: block;
-  padding: 0;
-  border-top: 1px solid var(--border);
-  background: var(--surface-secondary);
-}
-.project-card-footer .project-understanding .disclosure__trigger {
-  gap: 8px;
-  width: 100%;
-  padding: 11px 18px;
-  color: var(--ink);
-  font-size: 0.8rem;
-  font-weight: 550;
-}
-.project-card-footer .project-understanding .disclosure__trigger svg:first-child {
-  color: var(--accent);
-}
-.project-card-footer .project-understanding .disclosure__indicator {
-  margin-left: auto;
-}
-.project-card-footer .project-understanding .disclosure__body {
-  padding: 0 18px 18px;
-}
-.project-card .service-analysis strong {
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-.project-card .service-analysis p {
-  margin: 4px 0;
-  font-size: 0.8rem;
-}
-.project-card .project-analysis small {
-  color: var(--muted);
-  font-size: 0.72rem;
-}
-.service-analysis code {
-  color: var(--muted);
-  font-size: 0.7rem;
-  overflow-wrap: anywhere;
-}
-.project-analysis {
-  padding: 8px 0 14px;
-}
-.project-analysis > p:first-child {
-  color: var(--ink);
-  font-size: 0.88rem;
-  line-height: 1.65;
-}
-.project-analysis dl {
-  display: grid;
-  gap: 10px;
-  margin: 14px 0 18px;
-}
-.project-analysis dl > div {
-  display: grid;
-  grid-template-columns: 110px minmax(0, 1fr);
-  gap: 14px;
-}
-.project-analysis dt,
-.project-analysis h3 {
-  font-weight: 600;
-  font-size: 0.77rem;
-}
-.project-analysis dd {
-  color: var(--muted);
-  font-size: 0.8rem;
-  line-height: 1.55;
-}
-.service-analysis {
-  padding: 12px 0;
-  border-top: 1px solid var(--border);
-}
-.service-analysis p {
-  margin: 5px 0;
-  line-height: 1.55;
-}
-.project-ai-controls {
-  background: var(--surface);
-  border-radius: 6px;
-  padding: 14px;
-  margin-top: 8px;
-}
-.project-ai-controls > p {
-  font-size: 0.75rem;
-  color: var(--muted);
-  margin: 0 0 10px;
-}
-.project-ai-controls .consent-checkbox {
-  margin: 14px 0;
 }
 .session-link {
   display: block;

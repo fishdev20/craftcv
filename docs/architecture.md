@@ -43,12 +43,12 @@ src/renderer/
     hairline/           vendored Hairline engine and the Press figure
   features/
     ai/                 provider choice hook, provider/model fields, consent
-    projects/           repository import, project understanding
+    projects/           repository import, AI understanding requested in the application flow
     workspace/          New application wizard: job, check the job, CV, projects, review; session store
     applications/       the Applications tracker: list and board views, and their actions
     onboarding/         first run: the welcome, the setup checklist and the sample job
     documents/          document list, drafts store, Tiptap editor
-    library/            Your sources page
+    library/            Your sources page: CV and project import, repository tree, removal
     settings/           AI providers, getting started, and privacy
 ```
 
