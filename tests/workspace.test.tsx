@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { it, expect, vi } from 'vitest'
+import { afterEach, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, cleanup } from '@testing-library/react'
 import { MemoryRouter } from 'react-router'
 import Workspace from '../src/renderer/features/workspace/WorkspacePage'
@@ -15,6 +15,7 @@ globalThis.ResizeObserver ??= class {
 Element.prototype.getAnimations ??= () => []
 // these cases are about the wizard; the first-run welcome has its own tests
 useOnboardingStore.setState({ welcomed: true, setupHidden: true })
+afterEach(() => useWorkspaceStore.setState({ application: null }))
 type AppState = ReturnType<typeof useAppStore.getState>
 type WorkspaceState = ReturnType<typeof useWorkspaceStore.getState>
 /** Sets app and workspace state together, each key in the store that owns it. */

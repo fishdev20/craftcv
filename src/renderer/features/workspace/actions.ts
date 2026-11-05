@@ -31,6 +31,12 @@ type AIRequest = { provider: Provider; model: string; tokenBudget: number | null
 let pending: ReturnType<typeof setTimeout> | undefined
 useWorkspaceStore.subscribe((state, previous) => {
   const { application, selected, resumeId } = state
+  // A queued choice save belongs to the old application. Never let it run after switching
+  // applications or starting over (including after a view unmounts).
+  if (application?.id !== previous.application?.id) {
+    clearTimeout(pending)
+    pending = undefined
+  }
   if (!application || (selected === previous.selected && resumeId === previous.resumeId)) return
   const changed: UpdateApplicationRequest = { id: application.id }
   if (selected.join() !== application.projectIds.join()) changed.projectIds = selected
