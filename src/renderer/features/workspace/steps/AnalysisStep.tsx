@@ -135,6 +135,7 @@ export default function AnalysisStep() {
   if (!application) return null
   // only an analysis the person asked for; older applications may hold one read on the device
   const analysis = application.analysis?.source === 'ai' ? application.analysis : null
+  const hasAiPane = !!(analysis || analyzing || run)
   const field = (key: keyof typeof details, label: string, placeholder: string) => (
     <TextField
       value={details[key]}
@@ -154,40 +155,62 @@ export default function AnalysisStep() {
           {field('company', 'Company', 'e.g. Wolt')}
           {field('location', 'Location', 'e.g. Helsinki · Hybrid')}
         </div>
-        {analysis && <Requirements analysis={analysis} />}
-        <section className="job-description" aria-labelledby="job-description-heading">
-          <div className="job-description-heading">
-            <Typography.Heading level={3} id="job-description-heading">
-              Job description
-            </Typography.Heading>
-            <div className="job-description-actions">
-              {application.job.url && (
+        <div className="job-analysis-comparison" data-has-ai-pane={hasAiPane || undefined}>
+          <section className="job-description" aria-labelledby="job-description-heading">
+            <div className="job-description-heading">
+              <Typography.Heading level={3} id="job-description-heading">
+                Original job description
+              </Typography.Heading>
+              <div className="job-description-actions">
+                {application.job.url && (
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onPress={() =>
+                      void applicationsApi.openLink(application.id).catch(() => undefined)
+                    }
+                  >
+                    View posting
+                    <Icon icon="lucide:arrow-up-right" width={14} />
+                  </Button>
+                )}
+                {!hasAiPane && (
+                  <Button
+                    size="sm"
+                    variant="secondary"
+                    isDisabled={busy}
+                    onPress={() => setAnalyzing(true)}
+                  >
+                    <Icon icon="lucide:sparkles" width={14} />
+                    Analyse the job
+                  </Button>
+                )}
+              </div>
+            </div>
+            <div className="job-description-text">{application.job.description}</div>
+          </section>
+          {hasAiPane && (
+            <section className="job-analysis-pane" aria-labelledby="job-analysis-heading">
+              <div className="job-analysis-heading">
+                <Typography.Heading level={3} id="job-analysis-heading">
+                  AI analysis
+                </Typography.Heading>
                 <Button
                   size="sm"
-                  variant="ghost"
-                  onPress={() =>
-                    void applicationsApi.openLink(application.id).catch(() => undefined)
-                  }
+                  variant={analysis ? 'outline' : 'secondary'}
+                  isDisabled={busy || analyzing}
+                  onPress={() => setAnalyzing(true)}
                 >
-                  View posting
-                  <Icon icon="lucide:arrow-up-right" width={14} />
+                  <Icon icon="lucide:sparkles" width={14} />
+                  {analysis ? 'Analyse again' : 'Analyse the job'}
                 </Button>
-              )}
-              <Button
-                size="sm"
-                variant={analysis ? 'outline' : 'secondary'}
-                isDisabled={busy || analyzing}
-                onPress={() => setAnalyzing(true)}
-              >
-                <Icon icon="lucide:sparkles" width={14} />
-                {analysis ? 'Analyse again' : 'Analyse the job'}
-              </Button>
-            </div>
-          </div>
-          {analyzing && <AnalyzePanel onStart={setRun} onClose={() => setAnalyzing(false)} />}
-          {run && <AnalysisTrace applicationId={application.id} run={run} />}
-          <div className="job-description-text">{application.job.description}</div>
-        </section>
+              </div>
+              {analyzing && <AnalyzePanel onStart={setRun} onClose={() => setAnalyzing(false)} />}
+              {run && <AnalysisTrace applicationId={application.id} run={run} />}
+              {analysis && <Requirements analysis={analysis} />}
+            </section>
+          )}
+        </div>
       </div>
       <StepFooter
         onBack={() => goToStep('job')}

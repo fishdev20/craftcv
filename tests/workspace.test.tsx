@@ -75,6 +75,85 @@ it('requires the job first, then a project, before analysing', () => {
   cleanup()
 })
 
+it('places the AI process and requirements beside the original posting', () => {
+  const description = 'Build React interfaces and test them with Playwright.'
+  setState({
+    dashboard: {
+      projects: [],
+      repositories: [],
+      resumes: [],
+      sessions: [],
+      applications: [],
+      keys: { openai: true, chatgpt: false, anthropic: false },
+      chatgpt: { connected: false, email: null, models: [] },
+    },
+    application: {
+      id: '3fc89ef4-61c8-48b9-9a90-dbf1ee77fb5d',
+      createdAt: '2026-11-04T10:00:00.000Z',
+      updatedAt: '2026-11-04T10:00:00.000Z',
+      job: {
+        role: 'Frontend Engineer',
+        company: 'Acme',
+        location: 'Helsinki',
+        url: null,
+        description,
+        source: 'manual',
+      },
+      analysis: {
+        mustHave: ['React'],
+        niceToHave: ['Playwright'],
+        keywords: ['accessible interfaces'],
+        responsibilities: ['Build and test user interfaces.'],
+        source: 'ai',
+        provider: 'openai',
+        model: 'gpt-5',
+        analyzedAt: '2026-11-04T10:00:00.000Z',
+        usage: null,
+      },
+      resumeId: null,
+      projectIds: [],
+      sessionId: null,
+      step: 'analysis',
+      status: 'preparing',
+      history: [{ status: 'preparing', at: '2026-11-04T10:00:00.000Z' }],
+      appliedAt: null,
+      notes: '',
+    },
+    step: 'analysis',
+    busy: false,
+  })
+  const view = render(
+    <MemoryRouter>
+      <Workspace />
+    </MemoryRouter>,
+  )
+  const comparison = view.container.querySelector('.job-analysis-comparison')
+  const source = comparison?.querySelector('.job-description')
+  const result = comparison?.querySelector('.job-analysis-pane')
+  expect(comparison?.children).toHaveLength(2)
+  expect(source?.textContent).toContain('Original job description')
+  expect(source?.textContent).toContain(description)
+  expect(result?.textContent).toContain('AI analysis')
+  expect(result?.textContent).toContain('Requirements')
+  expect(result?.textContent).toContain('React')
+  expect(result?.textContent).toContain('Build and test user interfaces.')
+
+  const application = useWorkspaceStore.getState().application!
+  setState({ application: { ...application, analysis: null } })
+  view.rerender(
+    <MemoryRouter>
+      <Workspace />
+    </MemoryRouter>,
+  )
+  const fullWidthComparison = view.container.querySelector('.job-analysis-comparison')
+  const sourceHeading = fullWidthComparison?.querySelector('.job-description-heading')
+  const analyze = screen.getByRole('button', { name: 'Analyse the job' })
+  expect(fullWidthComparison?.hasAttribute('data-has-ai-pane')).toBe(false)
+  expect(fullWidthComparison?.querySelector('.job-analysis-pane')).toBeNull()
+  expect(sourceHeading?.contains(analyze)).toBe(true)
+  cleanup()
+})
+
 it('keeps project services collapsed until the disclosure is opened', () => {
   setState({
     dashboard: {

@@ -2685,6 +2685,10 @@ textarea {
   background: transparent;
   overflow: visible;
 }
+.workflow[data-step='analysis'] {
+  max-width: var(--content-width);
+  container-type: inline-size;
+}
 .workflow .panel-heading {
   height: auto;
   min-height: 0;
@@ -2840,19 +2844,59 @@ textarea {
   display: grid;
   gap: 14px;
 }
-.job-description {
+.job-analysis-comparison {
   display: grid;
-  gap: 8px;
+  grid-template-columns: 1fr;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
 }
-.job-description-heading {
+.job-analysis-comparison[data-has-ai-pane='true'] {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+.job-description {
+  align-content: start;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+.job-analysis-comparison[data-has-ai-pane='true'] .job-description {
+  padding-right: 24px;
+}
+.job-description-heading,
+.job-analysis-heading {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
 }
-.job-description-heading h3 {
+.job-description-heading h3,
+.job-analysis-heading h3 {
   margin: 0;
   font-size: 0.95rem;
   font-weight: 600;
+}
+.job-analysis-pane {
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  min-width: 0;
+  padding-left: 24px;
+  border-left: 1px solid var(--border);
+}
+@container (max-width: 760px) {
+  .job-analysis-comparison[data-has-ai-pane='true'] {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  .job-analysis-comparison[data-has-ai-pane='true'] .job-description {
+    padding-right: 0;
+  }
+  .job-analysis-pane {
+    padding-top: 18px;
+    padding-left: 0;
+    border-top: 1px solid var(--border);
+    border-left: 0;
+  }
 }
 /* the job as written, as plain text with its own line breaks */
 .job-description-text {
