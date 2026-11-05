@@ -60,14 +60,6 @@ export async function understandProjects(projects: Project[], request: Request) 
     notify(`AI understanding updated for ${completed} ${completed === 1 ? 'project' : 'projects'}.`)
 }
 
-export async function understandProject(project: Project, request: Request) {
-  await busyAction(async () => {
-    await analyze(project, request)
-    await refreshDashboard()
-    notify(`${project.name} project understanding updated.`)
-  })
-}
-
 export const removeProject = (id: string) =>
   action(async () => {
     await projectsApi.remove(id)
