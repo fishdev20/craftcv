@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, Chip, Disclosure, TextArea, TextField, Typography } from '@heroui/react'
+import { Button, Chip, Disclosure, Spinner, TextArea, TextField, Typography } from '@heroui/react'
 import type { Session, Suggestion } from '@shared/contracts'
 import { Icon } from '@/common/ui/icons'
 import { reviewSuggestion } from '../actions'
@@ -16,11 +16,14 @@ export default function SuggestionCard({
   session: Session
 }) {
   const [text, setText] = useState(suggestion.text),
-    [saving, setSaving] = useState(false)
+    [saving, setSaving] = useState<Suggestion['status'] | null>(null)
   const update = async (status: Suggestion['status']) => {
-    setSaving(true)
-    await reviewSuggestion(session.id, suggestion, text, status)
-    setSaving(false)
+    setSaving(status)
+    try {
+      await reviewSuggestion(session.id, suggestion, text, status)
+    } finally {
+      setSaving(null)
+    }
   }
   return (
     <article className={`suggestion ${suggestion.status}`}>
@@ -79,27 +82,36 @@ export default function SuggestionCard({
         <Button
           size="sm"
           variant="outline"
-          isDisabled={saving}
+          isPending={saving === 'approved'}
+          isDisabled={saving !== null}
           onClick={() => void update('approved')}
         >
-          <Icon icon="lucide:check" width={14} />
-          Approve
+          {saving === 'approved' ? (
+            <Spinner aria-hidden="true" size="sm" color="current" />
+          ) : (
+            <Icon icon="lucide:check" width={14} />
+          )}
+          {saving === 'approved' ? 'Approving…' : 'Approve'}
         </Button>
         <Button
           size="sm"
           variant="ghost"
-          isDisabled={saving}
+          isPending={saving === 'pending'}
+          isDisabled={saving !== null}
           onClick={() => void update('pending')}
         >
-          Save draft
+          {saving === 'pending' && <Spinner aria-hidden="true" size="sm" color="current" />}
+          {saving === 'pending' ? 'Saving…' : 'Save draft'}
         </Button>
         <Button
           size="sm"
           variant="ghost"
-          isDisabled={saving}
+          isPending={saving === 'rejected'}
+          isDisabled={saving !== null}
           onClick={() => void update('rejected')}
         >
-          Reject
+          {saving === 'rejected' && <Spinner aria-hidden="true" size="sm" color="current" />}
+          {saving === 'rejected' ? 'Rejecting…' : 'Reject'}
         </Button>
       </div>
     </article>

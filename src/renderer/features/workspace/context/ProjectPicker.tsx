@@ -1,5 +1,7 @@
 import { Button, Typography } from '@heroui/react'
+import ActionIcon from '@/common/ui/ActionIcon'
 import { Icon } from '@/common/ui/icons'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 import { useAppStore } from '@/common/store/app-store'
 import { importRepositories } from '@/features/projects/actions'
 import { MAX_SELECTED_PROJECTS, toggleProject, useWorkspaceStore } from '../store'
@@ -11,6 +13,7 @@ export default function ProjectPicker() {
   const projects = useAppStore((s) => s.dashboard?.projects),
     busy = useAppStore((s) => s.busy),
     selected = useWorkspaceStore((s) => s.selected)
+  const { pending, run } = usePendingAction()
   const full = selected.length >= MAX_SELECTED_PROJECTS
   return (
     <div className="input-section">
@@ -55,11 +58,12 @@ export default function ProjectPicker() {
       <Button
         variant="outline"
         fullWidth
+        isPending={pending === 'import'}
         isDisabled={busy}
-        onClick={() => void importRepositories('repository')}
+        onClick={() => void run('import', () => importRepositories('repository'))}
       >
-        <Icon icon="lucide:folder-plus" width={16} />
-        Import project folder
+        <ActionIcon pending={pending === 'import'} icon="lucide:folder-plus" width={16} />
+        {pending === 'import' ? 'Importing folder…' : 'Import project folder'}
       </Button>
     </div>
   )

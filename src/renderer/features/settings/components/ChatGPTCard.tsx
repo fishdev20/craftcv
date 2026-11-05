@@ -1,5 +1,6 @@
 import { Button, Typography } from '@heroui/react'
-import { Icon } from '@/common/ui/icons'
+import ActionIcon from '@/common/ui/ActionIcon'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 import { useAppStore } from '@/common/store/app-store'
 import { chatgptAction } from '../actions'
 import ProviderCard, { Status } from './ProviderCard'
@@ -8,6 +9,7 @@ import ProviderCard, { Status } from './ProviderCard'
 export default function ChatGPTCard() {
   const account = useAppStore((state) => state.dashboard?.chatgpt)
   const busy = useAppStore((state) => state.busy)
+  const { pending, run } = usePendingAction()
   return (
     <ProviderCard
       logo="simple-icons:openai"
@@ -48,28 +50,35 @@ export default function ChatGPTCard() {
             <Button
               size="sm"
               variant="outline"
+              isPending={pending === 'models'}
               isDisabled={busy}
-              onClick={() => void chatgptAction('models')}
+              onClick={() => void run('models', () => chatgptAction('models'))}
             >
-              <Icon icon="lucide:refresh-cw" width={14} />
-              Refresh models
+              <ActionIcon pending={pending === 'models'} icon="lucide:refresh-cw" width={14} />
+              {pending === 'models' ? 'Refreshing…' : 'Refresh models'}
             </Button>
             <Button
               size="sm"
               variant="ghost"
+              isPending={pending === 'disconnect'}
               isDisabled={busy}
-              onClick={() => void chatgptAction('disconnect')}
+              onClick={() => void run('disconnect', () => chatgptAction('disconnect'))}
             >
-              <Icon icon="lucide:unplug" width={14} />
-              Disconnect
+              <ActionIcon pending={pending === 'disconnect'} icon="lucide:unplug" width={14} />
+              {pending === 'disconnect' ? 'Disconnecting…' : 'Disconnect'}
             </Button>
           </div>
         </>
       ) : (
         <div className="provider-actions">
-          <Button size="sm" isDisabled={busy} onClick={() => void chatgptAction('connect')}>
-            <Icon icon="lucide:log-in" width={15} />
-            Continue with ChatGPT
+          <Button
+            size="sm"
+            isPending={pending === 'connect'}
+            isDisabled={busy}
+            onClick={() => void run('connect', () => chatgptAction('connect'))}
+          >
+            <ActionIcon pending={pending === 'connect'} icon="lucide:log-in" />
+            {pending === 'connect' ? 'Connecting…' : 'Continue with ChatGPT'}
           </Button>
         </div>
       )}

@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { Button, Disclosure, Input, Label, TextField, Typography } from '@heroui/react'
 import type { Session } from '@shared/contracts'
 import { Icon } from '@/common/ui/icons'
+import ActionIcon from '@/common/ui/ActionIcon'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 import { useAppStore } from '@/common/store/app-store'
 import ConnectProviderNote from '@/features/ai/ConnectProviderNote'
 import ConsentCheckbox from '@/features/ai/ConsentCheckbox'
@@ -16,6 +18,7 @@ export default function CloudRefinePanel({ session }: { session: Session }) {
   const busy = useAppStore((s) => s.busy)
   const choice = useProviderChoice()
   const [budget, setBudget] = useState('')
+  const { pending, run } = usePendingAction()
   const canGenerate =
     choice.consent &&
     choice.connected &&
@@ -66,17 +69,20 @@ export default function CloudRefinePanel({ session }: { session: Session }) {
           </ConsentCheckbox>
           {!choice.connected && <ConnectProviderNote />}
           <Button
+            isPending={pending === 'generate'}
             isDisabled={!canGenerate}
             onClick={() =>
-              void generateDrafts(session, {
-                provider: choice.provider,
-                model: choice.model,
-                tokenBudget: budget ? Number(budget) : null,
-              })
+              void run('generate', () =>
+                generateDrafts(session, {
+                  provider: choice.provider,
+                  model: choice.model,
+                  tokenBudget: budget ? Number(budget) : null,
+                }),
+              )
             }
           >
-            <Icon icon="lucide:sparkles" width={15} />
-            Generate AI drafts
+            <ActionIcon pending={pending === 'generate'} icon="lucide:sparkles" />
+            {pending === 'generate' ? 'Generating drafts…' : 'Generate AI drafts'}
           </Button>
           {session.usage && (
             <Typography.Paragraph size="sm">

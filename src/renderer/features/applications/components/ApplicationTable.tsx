@@ -1,8 +1,9 @@
-import { Chip, Table } from '@heroui/react'
+import { Chip, Spinner, Table } from '@heroui/react'
 import { applicationStatusSchema, type ApplicationSummary } from '@shared/contracts'
 import { Icon } from '@/common/ui/icons'
 import SelectField from '@/common/ui/SelectField'
 import { useAppStore } from '@/common/store/app-store'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 import { STATUS_LABELS, setApplicationStatus } from '../actions'
 import { STEP_LABELS, day } from '../meta'
 import ApplicationActions from './ApplicationActions'
@@ -44,21 +45,7 @@ export default function ApplicationTable({ applications }: { applications: Appli
                     </span>
                   </Table.Cell>
                   <Table.Cell>
-                    <SelectField
-                      label={`Status of ${name}`}
-                      hideLabel
-                      className="application-status-select"
-                      options={STATUS_OPTIONS}
-                      value={application.status}
-                      isDisabled={busy}
-                      onChange={(status) => {
-                        if (status !== application.status)
-                          void setApplicationStatus(
-                            application.id,
-                            applicationStatusSchema.parse(status),
-                          )
-                      }}
-                    />
+                    <StatusCell application={application} busy={busy} />
                   </Table.Cell>
                   <Table.Cell>
                     {application.status === 'preparing' ? (
@@ -85,5 +72,28 @@ export default function ApplicationTable({ applications }: { applications: Appli
         </Table.Content>
       </Table.ScrollContainer>
     </Table>
+  )
+}
+
+function StatusCell({ application, busy }: { application: ApplicationSummary; busy: boolean }) {
+  const { pending, run } = usePendingAction()
+  return (
+    <div className="application-status-control" aria-busy={pending !== null}>
+      <SelectField
+        label={`Status of ${application.role || 'Untitled role'}`}
+        hideLabel
+        className="application-status-select"
+        options={STATUS_OPTIONS}
+        value={application.status}
+        isDisabled={busy || pending !== null}
+        onChange={(status) => {
+          if (status !== application.status)
+            void run('status', () =>
+              setApplicationStatus(application.id, applicationStatusSchema.parse(status)),
+            )
+        }}
+      />
+      {pending && <Spinner aria-label="Updating status" size="sm" />}
+    </div>
   )
 }

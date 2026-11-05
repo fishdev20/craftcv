@@ -2,7 +2,9 @@ import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
 import { Button, EmptyState, Typography } from '@heroui/react'
 import { Icon } from '@/common/ui/icons'
+import ActionIcon from '@/common/ui/ActionIcon'
 import Page from '@/common/ui/Page'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 import { refreshDashboard, useAppStore } from '@/common/store/app-store'
 import { createDocument, createDocumentFromTemplate, importDocument } from './actions'
 import DocumentRow from './components/DocumentRow'
@@ -12,13 +14,14 @@ import type { DocumentTemplateId } from './templates'
 export default function DocumentsPage() {
   const resumes = useAppStore((s) => s.dashboard?.resumes)
   const navigate = useNavigate()
+  const { pending, run } = usePendingAction()
   useEffect(() => {
     void refreshDashboard()
   }, [])
   const open = (resume: { id: string } | null | undefined) => {
     if (resume) navigate(`/documents/${resume.id}`)
   }
-  const createBlank = () => void createDocument().then(open)
+  const createBlank = () => void run('blank', createDocument).then(open)
   const createFromTemplate = async (templateId: DocumentTemplateId) => {
     open(await createDocumentFromTemplate(templateId))
   }
@@ -28,13 +31,22 @@ export default function DocumentsPage() {
       description="Write, format, and export local CV documents."
       actions={
         <>
-          <Button variant="outline" onPress={() => void importDocument().then(open)}>
-            <Icon icon="lucide:upload" width={16} />
-            Import CV
+          <Button
+            variant="outline"
+            isPending={pending === 'import'}
+            isDisabled={pending !== null}
+            onPress={() => void run('import', importDocument).then(open)}
+          >
+            <ActionIcon pending={pending === 'import'} icon="lucide:upload" width={16} />
+            {pending === 'import' ? 'Importing…' : 'Import CV'}
           </Button>
-          <Button onPress={createBlank}>
-            <Icon icon="lucide:plus" width={16} />
-            Blank document
+          <Button
+            isPending={pending === 'blank'}
+            isDisabled={pending !== null}
+            onPress={createBlank}
+          >
+            <ActionIcon pending={pending === 'blank'} icon="lucide:plus" width={16} />
+            {pending === 'blank' ? 'Creating…' : 'Blank document'}
           </Button>
         </>
       }

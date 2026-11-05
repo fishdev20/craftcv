@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router'
 import { Button } from '@heroui/react'
 import ConfirmRemove from '@/common/ui/ConfirmRemove'
 import { useAppStore } from '@/common/store/app-store'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 import { deleteSession, openSession } from '@/features/workspace/actions'
 import LibrarySection from '@/features/library/components/LibrarySection'
 
@@ -18,27 +19,43 @@ export default function EarlierAnalyses() {
   return (
     <LibrarySection icon="lucide:history" title="Earlier analyses">
       {earlier.map((s) => (
-        <div className="library-row" key={s.id}>
-          <Button
-            variant="ghost"
-            className="session-link"
-            isDisabled={busy}
-            onClick={() =>
-              void openSession(s.id).then((opened) => {
-                if (opened) navigate('/')
-              })
-            }
-          >
-            <strong>{s.title}</strong>
-            <small>{new Date(s.createdAt).toLocaleString()}</small>
-          </Button>
-          <ConfirmRemove
-            label="Remove session"
-            isDisabled={busy}
-            onConfirm={() => deleteSession(s.id)}
-          />
-        </div>
+        <EarlierAnalysisRow key={s.id} session={s} busy={busy} onOpen={() => navigate('/')} />
       ))}
     </LibrarySection>
+  )
+}
+
+function EarlierAnalysisRow({
+  session,
+  busy,
+  onOpen,
+}: {
+  session: { id: string; title: string; createdAt: string }
+  busy: boolean
+  onOpen: () => void
+}) {
+  const { pending, run } = usePendingAction()
+  return (
+    <div className="library-row">
+      <Button
+        variant="ghost"
+        className="session-link"
+        isPending={pending === 'open'}
+        isDisabled={busy}
+        onClick={() =>
+          void run('open', () => openSession(session.id)).then((opened) => {
+            if (opened) onOpen()
+          })
+        }
+      >
+        <strong>{pending === 'open' ? 'Opening analysis…' : session.title}</strong>
+        <small>{new Date(session.createdAt).toLocaleString()}</small>
+      </Button>
+      <ConfirmRemove
+        label="Remove session"
+        isDisabled={busy || pending !== null}
+        onConfirm={() => deleteSession(session.id)}
+      />
+    </div>
   )
 }

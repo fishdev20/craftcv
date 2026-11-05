@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button } from '@heroui/react'
+import { Button, Spinner } from '@heroui/react'
 import { Icon } from './icons'
 
 /** A trash button that asks once before it removes anything. */
@@ -19,6 +19,17 @@ export default function ConfirmRemove({
   onConfirm: () => Promise<unknown>
 }) {
   const [confirming, setConfirming] = useState(false)
+  const [removing, setRemoving] = useState(false)
+  const remove = async () => {
+    if (removing) return
+    setRemoving(true)
+    try {
+      await onConfirm()
+      setConfirming(false)
+    } finally {
+      setRemoving(false)
+    }
+  }
   if (!confirming)
     return (
       <Button
@@ -37,12 +48,14 @@ export default function ConfirmRemove({
       <Button
         size="sm"
         variant="danger"
-        isDisabled={isDisabled}
-        onClick={() => void onConfirm().finally(() => setConfirming(false))}
+        isPending={removing}
+        isDisabled={isDisabled || removing}
+        onClick={() => void remove()}
       >
-        {confirmLabel}
+        {removing && <Spinner aria-hidden="true" size="sm" color="current" />}
+        {removing ? 'Removing…' : confirmLabel}
       </Button>
-      <Button size="sm" variant="ghost" onClick={() => setConfirming(false)}>
+      <Button size="sm" variant="ghost" isDisabled={removing} onClick={() => setConfirming(false)}>
         {keepLabel}
       </Button>
     </span>

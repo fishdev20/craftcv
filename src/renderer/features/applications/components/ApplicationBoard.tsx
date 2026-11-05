@@ -8,6 +8,7 @@ import {
 import { Icon } from '@/common/ui/icons'
 import { Kanban, useKanbanColumn } from '@/common/ui/Kanban'
 import { useAppStore } from '@/common/store/app-store'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 import { openApplication } from '@/features/workspace/actions'
 import { startOver } from '@/features/workspace/store'
 import { STATUS_LABELS, setApplicationStatus } from '../actions'
@@ -49,11 +50,13 @@ function BoardColumn({
 }) {
   const busy = useAppStore((s) => s.busy)
   const navigate = useNavigate()
+  const { pending, run } = usePendingAction()
   const dragAndDropHooks = useKanbanColumn({
     column: status,
     dragType: DRAG_TYPE,
     textOf: (key) => applications.find((item) => item.id === key)?.role || 'Application',
-    onMove: (key, to) => void setApplicationStatus(key, to as ApplicationStatus),
+    onMove: (key, to) =>
+      void run(`move:${key}`, () => setApplicationStatus(key, to as ApplicationStatus)),
   })
   return (
     <Kanban.Column data-status={status} aria-labelledby={`column-${status}`}>
@@ -86,10 +89,10 @@ function BoardColumn({
           <Kanban.CardList
             aria-label={`${STATUS_LABELS[status]} applications`}
             items={column}
-            dragAndDropHooks={busy ? undefined : dragAndDropHooks}
+            dragAndDropHooks={busy || pending ? undefined : dragAndDropHooks}
             // pressing a card opens its application, as Continue or Open does
             onAction={(key) =>
-              void openApplication(String(key)).then((opened) => {
+              void run(`open:${key}`, () => openApplication(String(key))).then((opened) => {
                 if (opened) navigate('/')
               })
             }
@@ -97,7 +100,10 @@ function BoardColumn({
           >
             {(application) => (
               <Kanban.Card id={application.id} textValue={application.role || 'Untitled role'}>
-                <ApplicationCard application={application} />
+                <ApplicationCard
+                  application={application}
+                  pending={pending?.endsWith(`:${application.id}`) ? pending.split(':')[0] : null}
+                />
               </Kanban.Card>
             )}
           </Kanban.CardList>

@@ -1,7 +1,9 @@
 import { Button, Description, InputGroup, Label, TextField, Typography } from '@heroui/react'
 import { useState } from 'react'
 import { useAppStore } from '@/common/store/app-store'
+import ActionIcon from '@/common/ui/ActionIcon'
 import { Icon } from '@/common/ui/icons'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 import { closeJobPage, importJobLink, openJobPage, takeJobPage } from '../actions'
 
 /**
@@ -14,6 +16,7 @@ export default function JobLinkField({ onImported }: { onImported?: () => void }
     // the link last tried could not be read, so it may be opened instead
     [failed, setFailed] = useState(false),
     [pageOpen, setPageOpen] = useState(false)
+  const { pending, run } = usePendingAction()
 
   const done = () => {
     setLink('')
@@ -28,7 +31,9 @@ export default function JobLinkField({ onImported }: { onImported?: () => void }
       onSubmit={(event) => {
         event.preventDefault()
         if (link.trim())
-          void importJobLink(link).then((imported) => (imported ? done() : setFailed(true)))
+          void run('import', () => importJobLink(link)).then((imported) =>
+            imported ? done() : setFailed(true),
+          )
       }}
     >
       <TextField
@@ -53,10 +58,11 @@ export default function JobLinkField({ onImported }: { onImported?: () => void }
               type="submit"
               size="sm"
               variant="secondary"
+              isPending={pending === 'import'}
               isDisabled={busy || pageOpen || !link.trim()}
             >
-              <Icon icon="lucide:download" width={14} />
-              Import
+              <ActionIcon pending={pending === 'import'} icon="lucide:download" width={14} />
+              {pending === 'import' ? 'Importing…' : 'Import'}
             </Button>
           </InputGroup.Suffix>
         </InputGroup>
@@ -73,11 +79,14 @@ export default function JobLinkField({ onImported }: { onImported?: () => void }
           <Button
             size="sm"
             variant="secondary"
+            isPending={pending === 'open'}
             isDisabled={busy}
-            onPress={() => void openJobPage().then((opened) => setPageOpen(Boolean(opened)))}
+            onPress={() =>
+              void run('open', openJobPage).then((opened) => setPageOpen(Boolean(opened)))
+            }
           >
-            <Icon icon="lucide:arrow-up-right" width={14} />
-            Open the posting
+            <ActionIcon pending={pending === 'open'} icon="lucide:arrow-up-right" width={14} />
+            {pending === 'open' ? 'Opening…' : 'Open the posting'}
           </Button>
         </div>
       )}
@@ -90,15 +99,16 @@ export default function JobLinkField({ onImported }: { onImported?: () => void }
           <div className="job-page-actions">
             <Button
               size="sm"
+              isPending={pending === 'use'}
               isDisabled={busy}
               onPress={() =>
-                void takeJobPage().then((taken) => {
+                void run('use', takeJobPage).then((taken) => {
                   if (taken) done()
                 })
               }
             >
-              <Icon icon="lucide:check" width={14} />
-              Use this page
+              <ActionIcon pending={pending === 'use'} icon="lucide:check" width={14} />
+              {pending === 'use' ? 'Reading page…' : 'Use this page'}
             </Button>
             <Button
               size="sm"
