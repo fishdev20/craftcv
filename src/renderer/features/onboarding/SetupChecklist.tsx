@@ -2,7 +2,9 @@ import type { ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 import { Button, CloseButton, ProgressBar, Typography } from '@heroui/react'
 import { useAppStore } from '@/common/store/app-store'
+import ActionIcon from '@/common/ui/ActionIcon'
 import { Icon } from '@/common/ui/icons'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 import { importRepositories } from '@/features/projects/actions'
 import { importCv, startBlankCv } from '@/features/workspace/actions'
 import { hideSetup, setupProgress, useOnboardingStore, type SetupItem } from './onboarding'
@@ -18,6 +20,7 @@ export default function SetupChecklist({ onStart }: { onStart?: () => void }) {
     busy = useAppStore((s) => s.busy),
     hidden = useOnboardingStore((s) => s.setupHidden)
   const navigate = useNavigate()
+  const { pending, run } = usePendingAction()
   if (!dashboard || hidden) return null
   const done = setupProgress(dashboard)
   const items: Item[] = [
@@ -27,12 +30,24 @@ export default function SetupChecklist({ onStart }: { onStart?: () => void }) {
       help: 'A PDF or Word file keeps its layout and pages.',
       action: (
         <>
-          <Button size="sm" variant="secondary" isDisabled={busy} onPress={() => void importCv()}>
-            <Icon icon="lucide:upload" width={14} />
-            Import
+          <Button
+            size="sm"
+            variant="secondary"
+            isPending={pending === 'cv'}
+            isDisabled={busy || pending !== null}
+            onPress={() => void run('cv', importCv)}
+          >
+            <ActionIcon pending={pending === 'cv'} icon="lucide:upload" width={14} />
+            {pending === 'cv' ? 'Importing…' : 'Import'}
           </Button>
-          <Button size="sm" variant="ghost" isDisabled={busy} onPress={() => void startBlankCv()}>
-            Start blank
+          <Button
+            size="sm"
+            variant="ghost"
+            isPending={pending === 'blank'}
+            isDisabled={busy || pending !== null}
+            onPress={() => void run('blank', startBlankCv)}
+          >
+            {pending === 'blank' ? 'Creating…' : 'Start blank'}
           </Button>
         </>
       ),
@@ -45,11 +60,12 @@ export default function SetupChecklist({ onStart }: { onStart?: () => void }) {
         <Button
           size="sm"
           variant="secondary"
-          isDisabled={busy}
-          onPress={() => void importRepositories('repository')}
+          isPending={pending === 'project'}
+          isDisabled={busy || pending !== null}
+          onPress={() => void run('project', () => importRepositories('repository'))}
         >
-          <Icon icon="lucide:folder-plus" width={14} />
-          Add folder
+          <ActionIcon pending={pending === 'project'} icon="lucide:folder-plus" width={14} />
+          {pending === 'project' ? 'Importing…' : 'Add folder'}
         </Button>
       ),
     },

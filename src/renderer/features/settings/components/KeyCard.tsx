@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Button, InputGroup, Label, Link, TextField, Typography } from '@heroui/react'
+import { Button, InputGroup, Label, Link, Spinner, TextField, Typography } from '@heroui/react'
 import type { ApiKeyProvider } from '@shared/contracts'
 import { Icon } from '@/common/ui/icons'
 import { openPage, useAppStore } from '@/common/store/app-store'
@@ -28,13 +28,16 @@ const keyProviders: Record<
 export default function KeyCard({ provider }: { provider: ApiKeyProvider }) {
   const [key, setKey] = useState(''),
     [visible, setVisible] = useState(false),
-    [saving, setSaving] = useState(false),
+    [saving, setSaving] = useState<'save' | 'remove' | null>(null),
     exists = useAppStore((s) => s.dashboard?.keys[provider])
   const { name, logo, about, billing } = keyProviders[provider]
-  const save = async (value: string) => {
-    setSaving(true)
-    if (await saveKey(provider, value)) setKey('')
-    setSaving(false)
+  const save = async (value: string, operation: 'save' | 'remove') => {
+    setSaving(operation)
+    try {
+      if (await saveKey(provider, value)) setKey('')
+    } finally {
+      setSaving(null)
+    }
   }
   return (
     <ProviderCard
@@ -60,7 +63,7 @@ export default function KeyCard({ provider }: { provider: ApiKeyProvider }) {
         className="provider-key-form"
         onSubmit={(event) => {
           event.preventDefault()
-          if (key.trim()) void save(key)
+          if (key.trim() && !saving) void save(key, 'save')
         }}
       >
         <TextField
@@ -93,13 +96,29 @@ export default function KeyCard({ provider }: { provider: ApiKeyProvider }) {
           </InputGroup>
         </TextField>
         <div className="provider-actions">
-          <Button type="submit" size="sm" isDisabled={!key.trim() || saving}>
-            Save key
+          <Button
+            type="submit"
+            size="sm"
+            isPending={saving === 'save'}
+            isDisabled={!key.trim() || saving !== null}
+          >
+            {saving === 'save' && <Spinner aria-hidden="true" size="sm" color="current" />}
+            {saving === 'save' ? 'Saving…' : 'Save key'}
           </Button>
           {exists && (
-            <Button size="sm" variant="ghost" isDisabled={saving} onClick={() => void save('')}>
-              <Icon icon="lucide:trash-2" width={14} />
-              Remove key
+            <Button
+              size="sm"
+              variant="ghost"
+              isPending={saving === 'remove'}
+              isDisabled={saving !== null}
+              onClick={() => void save('', 'remove')}
+            >
+              {saving === 'remove' ? (
+                <Spinner aria-hidden="true" size="sm" color="current" />
+              ) : (
+                <Icon icon="lucide:trash-2" width={14} />
+              )}
+              {saving === 'remove' ? 'Removing…' : 'Remove key'}
             </Button>
           )}
         </div>

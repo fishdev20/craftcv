@@ -421,15 +421,6 @@ h4,
   font-size: 0.72rem;
   pointer-events: none;
 }
-.local-indicator {
-  gap: 8px;
-}
-.local-indicator i {
-  height: 6px;
-  width: 6px;
-  border-radius: 50%;
-  background: var(--success);
-}
 .page {
   width: 100%;
   max-width: var(--content-width);
@@ -3044,9 +3035,15 @@ textarea {
   padding-top: 8px;
   border-top: 1px solid var(--separator);
 }
-.application-updated {
+.application-updated,
+.application-card-pending {
   color: var(--muted);
   font-size: 0.72rem;
+}
+.application-card-pending {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 .application-actions {
   display: flex;
@@ -3078,6 +3075,11 @@ textarea {
 }
 .application-status-select {
   width: 148px;
+}
+.application-status-control {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 .application-table .chip {
   gap: 4px;

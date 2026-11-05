@@ -2,17 +2,20 @@ import { Button, Disclosure, Typography } from '@heroui/react'
 import type { Project } from '@shared/contracts'
 import { Icon } from '@/common/ui/icons'
 import { useAppStore } from '@/common/store/app-store'
+import ActionIcon from '@/common/ui/ActionIcon'
 import ConnectProviderNote from '@/features/ai/ConnectProviderNote'
 import ConsentCheckbox from '@/features/ai/ConsentCheckbox'
 import ProviderModelFields from '@/features/ai/ProviderModelFields'
 import { providerName } from '@/features/ai/providers'
 import { useProviderChoice } from '@/features/ai/useProviderChoice'
 import { understandProjects } from '@/features/projects/actions'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 
 /** One bounded AI request per selected project, so analysis can use what each one is. */
 export default function UnderstandSelectedProjects({ projects }: { projects: Project[] }) {
   const busy = useAppStore((s) => s.busy)
   const choice = useProviderChoice()
+  const { pending, run } = usePendingAction()
   const count = projects.length,
     understood = projects.filter((project) => project.analysis).length,
     noun = count === 1 ? 'project' : 'projects'
@@ -43,11 +46,14 @@ export default function UnderstandSelectedProjects({ projects }: { projects: Pro
           </ConsentCheckbox>
           {!choice.connected && <ConnectProviderNote />}
           <Button
+            isPending={pending === 'understand'}
             isDisabled={busy || !count || !choice.connected || !choice.consent || !choice.model}
-            onClick={() => void understandProjects(projects, choice)}
+            onClick={() => void run('understand', () => understandProjects(projects, choice))}
           >
-            <Icon icon="lucide:sparkles" width={15} />
-            Analyze {count || 'selected'} {noun} with AI
+            <ActionIcon pending={pending === 'understand'} icon="lucide:sparkles" />
+            {pending === 'understand'
+              ? 'Understanding projects…'
+              : `Analyze ${count || 'selected'} ${noun} with AI`}
           </Button>
         </Disclosure.Body>
       </Disclosure.Content>

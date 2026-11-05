@@ -1,6 +1,7 @@
-import { useState } from 'react'
 import { Button, buttonVariants, Input, Link, TextField } from '@heroui/react'
 import { Icon } from '@/common/ui/icons'
+import ActionIcon from '@/common/ui/ActionIcon'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 import { exportDocument, saveDocument } from '../actions'
 import type { ExportFormat } from '../api'
 import { editDraft, type Draft } from '../drafts-store'
@@ -9,12 +10,8 @@ import SaveState from './SaveState'
 /** Back, the editable title with its save state, and save and export. */
 export default function EditorHeader({ draft }: { draft: Draft }) {
   const id = draft.resume.id
-  const [exporting, setExporting] = useState(false)
-  const exportAs = async (format: ExportFormat) => {
-    setExporting(true)
-    await exportDocument(id, format)
-    setExporting(false)
-  }
+  const { pending, run } = usePendingAction()
+  const exportAs = (format: ExportFormat) => run(format, () => exportDocument(id, format))
   return (
     <div className="editor-header">
       <Link
@@ -38,22 +35,24 @@ export default function EditorHeader({ draft }: { draft: Draft }) {
         <Button
           variant="ghost"
           size="sm"
-          onClick={() => void saveDocument(id)}
-          isDisabled={draft.saving}
+          onClick={() => void run('save', () => saveDocument(id))}
+          isPending={pending === 'save'}
+          isDisabled={draft.saving || pending !== null}
         >
-          <Icon icon="lucide:save" width={15} />
-          {draft.error ? 'Retry save' : 'Save'}
+          <ActionIcon pending={pending === 'save'} icon="lucide:save" />
+          {pending === 'save' ? 'Saving…' : draft.error ? 'Retry save' : 'Save'}
         </Button>
         {(['pdf', 'docx'] as const).map((format) => (
           <Button
             key={format}
             variant="outline"
             size="sm"
-            isDisabled={exporting}
+            isPending={pending === format}
+            isDisabled={pending !== null}
             onClick={() => void exportAs(format)}
           >
-            <Icon icon="lucide:download" width={14} />
-            {format.toUpperCase()}
+            <ActionIcon pending={pending === format} icon="lucide:download" width={14} />
+            {pending === format ? `Exporting ${format.toUpperCase()}…` : format.toUpperCase()}
           </Button>
         ))}
       </div>

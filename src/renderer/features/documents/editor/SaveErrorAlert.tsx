@@ -1,11 +1,13 @@
 import { useNavigate } from 'react-router'
 import { Alert, Button } from '@heroui/react'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 import { saveDocumentCopy } from '../actions'
 import type { Draft } from '../drafts-store'
 
 /** Shown when a save fails; the draft stays open, and can be kept as a new document. */
 export default function SaveErrorAlert({ draft }: { draft: Draft }) {
   const navigate = useNavigate()
+  const { pending, run } = usePendingAction()
   return (
     <Alert status="danger" role="alert" className="editor-save-error">
       <Alert.Indicator />
@@ -17,13 +19,14 @@ export default function SaveErrorAlert({ draft }: { draft: Draft }) {
       <Button
         variant="outline"
         size="sm"
+        isPending={pending === 'copy'}
         onClick={() =>
-          void saveDocumentCopy(draft.resume).then((saved) => {
+          void run('copy', () => saveDocumentCopy(draft.resume)).then((saved) => {
             if (saved) navigate(`/documents/${saved.id}`)
           })
         }
       >
-        Save a copy
+        {pending === 'copy' ? 'Saving copy…' : 'Save a copy'}
       </Button>
     </Alert>
   )

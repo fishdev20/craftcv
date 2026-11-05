@@ -26,7 +26,7 @@ export default function CvStep() {
       <StepFooter
         onBack={() => goToStep('analysis')}
         nextDisabled={!ready || busy}
-        onNext={() => void continueFromCv()}
+        onNext={continueFromCv}
       />
     </section>
   )

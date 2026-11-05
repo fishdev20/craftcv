@@ -1,6 +1,5 @@
-import { Button, Chip, Separator, Spinner } from '@heroui/react'
+import { Button, Separator } from '@heroui/react'
 import { Icon } from '@/common/ui/icons'
-import { useAppStore } from '@/common/store/app-store'
 import HeaderBreadcrumbs from './HeaderBreadcrumbs'
 import ThemeSwitch from './ThemeSwitch'
 
@@ -11,7 +10,6 @@ export default function Topbar({
   collapsed: boolean
   onToggleSidebar: () => void
 }) {
-  const busy = useAppStore((s) => s.busy)
   return (
     <header className="topbar">
       <div className="topbar-start">
@@ -33,15 +31,6 @@ export default function Topbar({
         <HeaderBreadcrumbs />
       </div>
       <div className="topbar-actions">
-        <Chip
-          size="sm"
-          variant="soft"
-          color={busy ? 'accent' : 'success'}
-          className="local-indicator"
-        >
-          {busy ? <Spinner aria-hidden="true" size="sm" color="current" /> : <i />}
-          {busy ? 'Working on your request' : 'Local workspace'}
-        </Chip>
         <ThemeSwitch />
       </div>
     </header>

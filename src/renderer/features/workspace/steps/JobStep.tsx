@@ -89,7 +89,7 @@ export default function JobStep() {
       <StepFooter
         nextLabel="Analyse the job"
         nextDisabled={!ready || busy}
-        onNext={() => void continueFromJob()}
+        onNext={continueFromJob}
       />
     </section>
   )

@@ -1,7 +1,9 @@
 import { Button, Chip } from '@heroui/react'
 import { appApi } from '@/common/api/app-api'
 import Loading from '@/common/ui/Loading'
+import ActionIcon from '@/common/ui/ActionIcon'
 import { Icon } from '@/common/ui/icons'
+import { usePendingAction } from '@/common/ui/usePendingAction'
 import { action, useAppStore } from '@/common/store/app-store'
 import PanelHeading from '../PanelHeading'
 import { goToStep, markApplied } from '../actions'
@@ -15,6 +17,7 @@ export default function ReviewPanel() {
     status = useWorkspaceStore((s) => s.application?.status)
   const busy = useAppStore((s) => s.busy),
     progress = useAppStore((s) => s.progress)
+  const { pending, run } = usePendingAction()
   return (
     <section className="review-panel" aria-labelledby="review-heading">
       <PanelHeading step={5} id="review-heading" title="Review your suggestions">
@@ -34,9 +37,14 @@ export default function ReviewPanel() {
           Edit projects
         </Button>
         {status === 'preparing' && session && (
-          <Button size="sm" isDisabled={busy} onPress={() => void markApplied()}>
-            <Icon icon="lucide:send" width={14} />
-            Mark as applied
+          <Button
+            size="sm"
+            isPending={pending === 'applied'}
+            isDisabled={busy}
+            onPress={() => void run('applied', markApplied)}
+          >
+            <ActionIcon pending={pending === 'applied'} icon="lucide:send" width={14} />
+            {pending === 'applied' ? 'Updating…' : 'Mark as applied'}
           </Button>
         )}
       </PanelHeading>

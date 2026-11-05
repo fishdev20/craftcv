@@ -2,7 +2,8 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router'
 import { Button, Dropdown } from '@heroui/react'
 import { applicationStatusSchema, type ApplicationSummary } from '@shared/contracts'
-import { Icon } from '@/common/ui/icons'
+import { usePendingAction } from '@/common/ui/usePendingAction'
+import ActionIcon from '@/common/ui/ActionIcon'
 import { useAppStore } from '@/common/store/app-store'
 import { openApplication } from '@/features/workspace/actions'
 import {
@@ -26,12 +27,16 @@ export default function ApplicationActions({
   const busy = useAppStore((s) => s.busy)
   const navigate = useNavigate()
   const [removing, setRemoving] = useState(false)
+  const { pending, run } = usePendingAction()
   const name = application.role || 'Untitled role'
   const preparing = application.status === 'preparing'
   const choose = (key: string) => {
-    if (key === 'link') void openApplicationLink(application.id)
+    if (key === 'link') void run('link', () => openApplicationLink(application.id))
     else if (key === 'remove') setRemoving(true)
-    else void setApplicationStatus(application.id, applicationStatusSchema.parse(key))
+    else
+      void run('status', () =>
+        setApplicationStatus(application.id, applicationStatusSchema.parse(key)),
+      )
   }
   if (removing)
     return (
@@ -40,12 +45,18 @@ export default function ApplicationActions({
         <Button
           size="sm"
           variant="danger"
-          isDisabled={busy}
-          onPress={() => void removeApplication(application.id)}
+          isPending={pending === 'remove'}
+          isDisabled={busy || pending !== null}
+          onPress={() => void run('remove', () => removeApplication(application.id))}
         >
-          Remove
+          {pending === 'remove' ? 'Removing…' : 'Remove'}
         </Button>
-        <Button size="sm" variant="ghost" onPress={() => setRemoving(false)}>
+        <Button
+          size="sm"
+          variant="ghost"
+          isDisabled={pending !== null}
+          onPress={() => setRemoving(false)}
+        >
           Keep
         </Button>
       </div>
@@ -55,14 +66,15 @@ export default function ApplicationActions({
       <Button
         size="sm"
         variant={preparing ? 'primary' : 'outline'}
-        isDisabled={busy}
+        isPending={pending === 'open'}
+        isDisabled={busy || pending !== null}
         onPress={() =>
-          void openApplication(application.id).then((opened) => {
+          void run('open', () => openApplication(application.id)).then((opened) => {
             if (opened) navigate('/')
           })
         }
       >
-        {preparing ? 'Continue' : 'Open'}
+        {pending === 'open' ? 'Opening…' : preparing ? 'Continue' : 'Open'}
       </Button>
       <Dropdown>
         {/* a Button as the trigger keeps its own centring; Dropdown.Trigger is inline-block */}
@@ -71,9 +83,14 @@ export default function ApplicationActions({
           size="sm"
           variant="ghost"
           aria-label={`Actions for ${name}`}
-          isDisabled={busy}
+          isPending={pending === 'status' || pending === 'link'}
+          isDisabled={busy || pending !== null}
         >
-          <Icon icon="lucide:ellipsis" width={16} />
+          <ActionIcon
+            pending={pending === 'status' || pending === 'link'}
+            icon="lucide:ellipsis"
+            width={16}
+          />
         </Button>
         <Dropdown.Popover placement="bottom end">
           <Dropdown.Menu

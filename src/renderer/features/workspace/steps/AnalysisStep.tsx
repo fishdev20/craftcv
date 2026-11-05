@@ -215,7 +215,7 @@ export default function AnalysisStep() {
       <StepFooter
         onBack={() => goToStep('job')}
         nextDisabled={busy}
-        onNext={() => void continueFromAnalysis(details)}
+        onNext={() => continueFromAnalysis(details)}
       />
     </section>
   )
