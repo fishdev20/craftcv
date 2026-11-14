@@ -7,11 +7,10 @@ import { useAppStore } from '../src/renderer/common/store/app-store'
 import {
   finishWelcome,
   replayOnboarding,
-  setupProgress,
   shouldWelcome,
   useOnboardingStore,
 } from '../src/renderer/features/onboarding/onboarding'
-import Workspace from '../src/renderer/features/workspace/WorkspacePage'
+import Welcome from '../src/renderer/features/onboarding/Welcome'
 
 globalThis.ResizeObserver ??= class {
   observe() {}
@@ -43,51 +42,52 @@ it('welcomes only a new install that has not seen the welcome', () => {
   expect(shouldWelcome({ ...empty, resumes: [{ id: 'cv', name: 'CV' }] }, false)).toBe(false)
 })
 
-it('ticks setup off from what is saved', () => {
-  expect(setupProgress(empty)).toEqual({ cv: false, project: false, ai: false, application: false })
-  expect(
-    setupProgress({
-      ...empty,
-      resumes: [{ id: 'cv', name: 'CV' }],
-      keys: { ...empty.keys, anthropic: true },
-    }),
-  ).toEqual({ cv: true, project: false, ai: true, application: false })
-  expect(setupProgress({ ...empty, chatgpt: { ...empty.chatgpt, connected: true } }).ai).toBe(true)
-})
-
-it('shows the welcome once, then the wizard with the setup checklist', () => {
-  useOnboardingStore.setState({ welcomed: false, setupHidden: false })
+it('collects the starting sources before opening the workspace', () => {
+  useOnboardingStore.setState({ welcomed: false, forceShow: false })
   useAppStore.setState({ dashboard: empty, busy: false })
-  const view = () =>
-    render(
-      <MemoryRouter>
-        <Workspace />
-      </MemoryRouter>,
-    )
-  view()
-  expect(screen.getByRole('heading', { name: 'Welcome to CraftCV' })).toBeTruthy()
+  render(
+    <MemoryRouter>
+      <Welcome />
+    </MemoryRouter>,
+  )
+  expect(screen.getByRole('heading', { name: 'Your work deserves to be seen.' })).toBeTruthy()
+  expect(document.querySelector('[data-hairline="documents"][data-active="true"]')).toBeTruthy()
   fireEvent.click(screen.getByRole('button', { name: /Get started/ }))
-  expect(screen.queryByRole('heading', { name: 'Welcome to CraftCV' })).toBeNull()
-  expect(screen.getByRole('heading', { name: 'Set up CraftCV' })).toBeTruthy()
-  expect(screen.getByText('0 of 4 done')).toBeTruthy()
+  expect(window.localStorage.getItem('craftcv-setup-started')).toBe('true')
+  expect(screen.getByRole('heading', { name: 'Start with your CV.' })).toBeTruthy()
+  expect(document.querySelector('[data-hairline="cv-sheet"][data-active="true"]')).toBeTruthy()
+  expect(
+    shouldWelcome(
+      { ...empty, resumes: [{ id: 'cv', name: 'CV' }] },
+      false,
+      useOnboardingStore.getState().forceShow,
+    ),
+  ).toBe(true)
+  expect(screen.getByRole('button', { name: 'Import CV' })).toBeTruthy()
+  fireEvent.click(screen.getByRole('button', { name: /Do this later/ }))
+  expect(screen.getByRole('heading', { name: 'Show the work behind it.' })).toBeTruthy()
+  expect(
+    document.querySelector('[data-hairline="project-folder"][data-active="true"]'),
+  ).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Add project folder' })).toBeTruthy()
+  fireEvent.click(screen.getByRole('button', { name: /Do this later/ }))
+  expect(screen.getByRole('heading', { name: 'Let your work speak.' })).toBeTruthy()
+  expect(document.querySelector('[data-hairline="draft-press"][data-active="true"]')).toBeTruthy()
+  fireEvent.click(screen.getByRole('button', { name: /Open workspace/ }))
   expect(window.localStorage.getItem('craftcv-welcomed')).toBe('true')
-
-  // closing the checklist is remembered too
-  fireEvent.click(screen.getByRole('button', { name: 'Hide setup' }))
-  expect(screen.queryByRole('heading', { name: 'Set up CraftCV' })).toBeNull()
-  expect(window.localStorage.getItem('craftcv-setup-hidden')).toBe('true')
+  expect(window.localStorage.getItem('craftcv-setup-started')).toBeNull()
+  expect(useOnboardingStore.getState().welcomed).toBe(true)
 })
 
-it('replays the welcome from Settings, even with work saved', () => {
+it('replays setup from Settings, even with work saved', () => {
   const saved = { ...empty, resumes: [{ id: 'cv', name: 'CV' }] }
-  finishWelcome({ hideSetup: true })
+  finishWelcome()
   expect(shouldWelcome(saved, useOnboardingStore.getState().welcomed)).toBe(false)
   replayOnboarding()
-  const { welcomed, replay, setupHidden } = useOnboardingStore.getState()
-  expect(shouldWelcome(saved, welcomed, replay)).toBe(true)
-  expect(setupHidden).toBe(false)
+  const { welcomed, forceShow } = useOnboardingStore.getState()
+  expect(shouldWelcome(saved, welcomed, forceShow)).toBe(true)
+  expect(window.localStorage.getItem('craftcv-setup-started')).toBe('true')
   expect(window.localStorage.getItem('craftcv-welcomed')).toBeNull()
-  // seeing it again ends the replay
-  finishWelcome({ hideSetup: false })
-  expect(useOnboardingStore.getState().replay).toBe(false)
+  finishWelcome()
+  expect(useOnboardingStore.getState().forceShow).toBe(false)
 })

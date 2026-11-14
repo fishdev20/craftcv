@@ -23,20 +23,24 @@ const app = await electron.launch({
 })
 try {
   const page = await app.firstWindow()
-  await page.getByRole('button', { name: 'Skip' }).click()
+  await page.getByRole('button', { name: 'Get started' }).click()
+  await page.getByRole('button', { name: 'Do this later' }).click()
+  await app.evaluate(({ dialog }, path) => {
+    dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [path] })
+  }, folder)
+  await page.getByRole('button', { name: 'Add project folder' }).click()
+  await expect(page.getByText('kaira', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByRole('button', { name: 'Open workspace' }).click()
   // through the wizard to its projects step, with a blank CV
   await page.getByRole('tab', { name: /Paste the text/ }).click()
   await page
     .getByLabel('Target job description')
     .fill('Looking for a React developer with JavaScript experience across microservices.')
-  await page.getByRole('button', { name: 'Analyse the job' }).click()
+  await page.getByRole('button', { name: 'Check job details' }).click()
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByRole('button', { name: /Start a blank one/ }).click()
   await page.getByRole('button', { name: 'Continue' }).click()
-  await app.evaluate(({ dialog }, path) => {
-    dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [path] })
-  }, folder)
-  await page.getByRole('button', { name: 'Import project folder', exact: true }).click()
   await expect(page.getByText('1/10 selected', { exact: true })).toBeVisible()
   await expect(page.locator('.project-choice small')).toContainText('6 services')
   await page.getByRole('button', { name: 'Import project folder', exact: true }).click()

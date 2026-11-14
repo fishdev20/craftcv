@@ -3,9 +3,6 @@ import { Button } from '@heroui/react'
 import { useAppStore } from '@/common/store/app-store'
 import { Icon } from '@/common/ui/icons'
 import Page from '@/common/ui/Page'
-import SetupChecklist from '@/features/onboarding/SetupChecklist'
-import Welcome from '@/features/onboarding/Welcome'
-import { shouldWelcome, useOnboardingStore } from '@/features/onboarding/onboarding'
 import ReviewPanel from './review/ReviewPanel'
 import AnalysisStep from './steps/AnalysisStep'
 import CvStep from './steps/CvStep'
@@ -24,9 +21,6 @@ export default function WorkspacePage() {
       : null,
   )
   const busy = useAppStore((s) => s.busy)
-  const welcomed = useOnboardingStore((s) => s.welcomed)
-  const replay = useOnboardingStore((s) => s.replay)
-  const welcome = useAppStore((s) => shouldWelcome(s.dashboard, welcomed, replay))
   const shown = useRef(step)
   // each step is its own page, so it opens at the top rather than where the last one was scrolled
   useEffect(() => {
@@ -34,14 +28,13 @@ export default function WorkspacePage() {
     shown.current = step
     window.scrollTo({ top: 0 })
   }, [step])
-  if (welcome) return <Welcome />
   return (
     <Page
       title={title ?? 'New application'}
       description={
         title
           ? 'Saved as you go. Pick it up any time from Applications.'
-          : 'Add a job, choose your CV and projects, and CraftCV tailors the CV to the role.'
+          : 'Add a job, choose your CV and projects, then review source-backed bullet drafts.'
       }
       actions={
         title && (
@@ -52,7 +45,6 @@ export default function WorkspacePage() {
         )
       }
     >
-      {step === 'job' && !title && <SetupChecklist />}
       <WizardSteps />
       <div className="workflow" data-step={step}>
         {step === 'job' && <JobStep />}

@@ -4,7 +4,7 @@ import { Icon } from '@/common/ui/icons'
 import { replayOnboarding } from '@/features/onboarding/onboarding'
 import { startOver } from '@/features/workspace/store'
 
-/** Brings back the first-run welcome and setup checklist, for a second look. */
+/** Reopens the first-run setup without changing saved sources. */
 export default function OnboardingSection() {
   const navigate = useNavigate()
   return (
@@ -15,7 +15,7 @@ export default function OnboardingSection() {
             Getting started
           </Typography.Heading>
           <Typography.Paragraph size="sm">
-            See the welcome and the setup checklist again. Nothing you have saved changes.
+            Walk through the first-run setup again. Nothing you have saved changes.
           </Typography.Paragraph>
         </div>
         <Button
@@ -28,7 +28,7 @@ export default function OnboardingSection() {
           }}
         >
           <Icon icon="lucide:refresh-cw" width={14} />
-          Show welcome and setup again
+          Show setup again
         </Button>
       </div>
     </section>

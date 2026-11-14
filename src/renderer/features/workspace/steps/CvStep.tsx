@@ -18,8 +18,8 @@ export default function CvStep() {
       <PanelHeading step={3} id="cv-heading" title="Choose your master CV" />
       <div className="step-body">
         <Typography.Paragraph size="sm" className="step-intro">
-          The CV CraftCV tailors for this job. Your master CV itself is never changed; the tailored
-          version is saved as a new document.
+          Choose the CV to start from. Approved project bullets can be added to a new document; this
+          original stays unchanged.
         </Typography.Paragraph>
         <ResumePicker />
       </div>

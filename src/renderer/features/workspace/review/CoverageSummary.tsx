@@ -24,17 +24,17 @@ export default function CoverageSummary({
             </span>
           </div>
         </div>
-        <Meter aria-label="Estimated ATS relevance" value={score} size="sm">
+        <Meter aria-label="Approved skill coverage" value={score} size="sm">
           <Meter.Track>
             <Meter.Fill />
           </Meter.Track>
         </Meter>
         <Typography.Paragraph size="sm">
-          Keyword coverage only. This is not a prediction of an employer’s ATS score.
+          Counts approved bullets that cite a detected skill. It is not an employer ATS score.
         </Typography.Paragraph>
       </div>
       <div className="requirement-summary">
-        <span className="coverage-label">Requirements found in the role</span>
+        <span className="coverage-label">Technical skills detected in the job</span>
         <div className="requirements">
           {session.requirements.map((r) => (
             <Chip

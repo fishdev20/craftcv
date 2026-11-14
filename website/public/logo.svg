@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <!-- CraftCV for /v2: the hero's italic C (Instrument Serif, OFL) holding a CV on a sky tile; its one blue line the line tailored to the job -->
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#2c5fb4"/>
+      <stop offset=".62" stop-color="#4a86d6"/>
+      <stop offset="1" stop-color="#8dbcf0"/>
+    </linearGradient>
+    <radialGradient id="cloud" cx=".5" cy="1.08" r=".62">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".9"/>
+      <stop offset=".55" stop-color="#ffffff" stop-opacity=".28"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="lift" x="-30%" y="-30%" width="160%" height="160%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#0b2a5c" flood-opacity=".28"/>
+    </filter>
+    <clipPath id="tile"><rect x="32" y="32" width="960" height="960" rx="232"/></clipPath>
+  </defs>
+  <g clip-path="url(#tile)">
+    <rect width="1024" height="1024" fill="url(#sky)"/>
+    <rect width="1024" height="1024" fill="url(#cloud)"/>
+  </g>
+  <rect x="44" y="44" width="936" height="936" rx="221" fill="none" stroke="#ffffff" stroke-opacity=".14" stroke-width="8"/>
+  <!-- the CV, tilted like the hero's fanned pages, in the C's open side -->
+  <g transform="translate(628 506) rotate(9) scale(.96)" filter="url(#lift)">
+    <rect x="-130" y="-170" width="260" height="340" rx="30" fill="#fbfdff"/>
+    <g fill="none" stroke-linecap="round">
+      <path d="M-86 -104H10" stroke="#0e1c2b" stroke-width="30"/>
+      <path d="M-86 -38H86M-86 98H52" stroke="#c4d2e0" stroke-width="22"/>
+      <path d="M-86 30H86" stroke="#00b8f0" stroke-width="22"/>
+    </g>
+  </g>
+  <!-- the C: Instrument Serif italic, the hero's face, drawn over the sheet's edge -->
+  <path transform="translate(178 872) scale(.98 -.98)" fill="#ffffff" stroke="#ffffff" stroke-width="14" stroke-linejoin="round" filter="url(#lift)" d="M256 -9Q150 -9 102.5 58.0Q55 125 55 252Q55 313 70.0 379.0Q85 445 113.5 507.5Q142 570 182.0 620.0Q222 670 272.5 700.0Q323 730 382 730Q452 730 509 683Q519 675 516 661L486 510Q483 494 471 494Q459 494 459 510L458 549Q456 632 434.0 667.0Q412 702 371 702Q332 702 296.0 670.5Q260 639 229.0 586.5Q198 534 174.5 470.5Q151 407 138.0 343.0Q125 279 125 224Q125 134 152.5 77.0Q180 20 244 20Q282 20 311.5 47.5Q341 75 372 142L394 189Q399 201 409 201Q425 201 420 182L380 26Q376 11 364 8Q347 2 315.0 -3.5Q283 -9 256 -9Z"/>
+</svg>

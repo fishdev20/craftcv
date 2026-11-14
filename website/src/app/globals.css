@@ -1,0 +1,1182 @@
+@import 'tailwindcss';
+@import '@heroui/styles';
+
+/* the desktop app's palette, radius and fonts (synced from src/renderer/styles.css) */
+@import '../styles/app-theme.css';
+
+/* ---------------------------------------------------------------- tokens */
+/* the page's names for the app's tokens, so the site and the app share one theme */
+:root {
+  /* the page */
+  --bg: var(--surface);
+  --ink: var(--foreground);
+  --ink-soft: color-mix(in oklch, var(--foreground) 78%, var(--muted));
+  --line: var(--separator);
+  --line-strong: var(--border);
+  --card: var(--surface);
+  --tint: var(--background);
+  --sky: color-mix(in oklch, var(--accent) 12%, white);
+  --sky-deep: color-mix(in oklch, var(--accent) 28%, white);
+  --blue: var(--accent);
+  /* the app's accent at its own hue, dark enough for text and icons on white */
+  --blue-deep: oklch(50% 0.13 235);
+  --blue-soft: var(--primary-light);
+  --green: color-mix(in oklch, var(--success) 62%, black);
+  --green-soft: color-mix(in oklch, var(--success) 14%, white);
+
+  /* the skill's motion layer reads these */
+  --action: var(--accent);
+
+  /* rhythm (desktop / under 640px) */
+  --nav: 72px;
+  --padt: 120px;
+  --padb: 72px;
+  --gut: 80px;
+  --hgap: 48px;
+  --hpadb: 64px;
+  --r-sm: var(--panel-radius);
+  --r-lg: calc(var(--panel-radius) + 4px);
+  --shadow: 0 1px 2px rgb(11 27 63 / 0.04), 0 12px 32px -16px rgb(11 27 63 / 0.18);
+
+  /* type: Instrument Serif headings and Inter text (layout.tsx), the app's mono for code; the
+     CV-page serif only dresses CV pages, as a template would */
+  --display: var(--font-instrument), Georgia, serif;
+  --sans: var(--font-inter), var(--font-sans);
+  --mono: var(--font-mono);
+  --serif: 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --t-h1: clamp(48px, 4vw + 16px, 80px);
+  --t-h2: clamp(36px, 2vw + 20px, 56px);
+  --t-h3: 20px;
+  --t-lead: 18px;
+  --t-body: 16px;
+  --t-small: 14px;
+  --t-label: 13px;
+}
+@media (max-width: 1023px) {
+  :root {
+    --gut: 48px;
+  }
+}
+@media (max-width: 639px) {
+  :root {
+    --nav: 56px;
+    --padt: 96px;
+    --padb: 48px;
+    --gut: 24px;
+    --hgap: 40px;
+    --hpadb: 24px;
+  }
+}
+
+/* ---------------------------------------------------------------- base */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+}
+html {
+  scroll-padding-top: 0;
+  scroll-behavior: auto;
+}
+/* Lenis (SmoothScroll.tsx) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: var(--t-body);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  line-height: 1.02;
+  text-wrap: balance;
+}
+h3 {
+  font-family: var(--sans);
+  font-size: var(--t-h3);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+}
+p {
+  margin: 0;
+}
+code,
+.mono {
+  font-family: var(--mono);
+}
+.muted {
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------- the frame: one section per screen */
+.wrap {
+  position: relative;
+  z-index: 1;
+  width: min(1280px, calc(100% - 2 * var(--gut)));
+  margin-inline: auto;
+}
+/* every split shares one line: the right column starts at column 7 of 12 */
+main > section {
+  position: relative;
+  height: calc(var(--h, 1) * 100svh);
+  padding-top: var(--padt);
+  padding-bottom: var(--padb);
+  overflow: hidden;
+}
+@media (max-width: 639px) {
+  /* stacked on a phone, a section is as tall as its content, never under one screen */
+  main > section:not(.hero) {
+    height: auto;
+    min-height: 100lvh;
+  }
+}
+
+.eyebrow {
+  display: block;
+  color: var(--blue-deep);
+  font-size: var(--t-label);
+  font-weight: 500;
+}
+.section-head {
+  display: grid;
+  gap: 16px;
+  max-width: 720px;
+}
+.section-head h2 {
+  font-size: var(--t-h2);
+}
+.section-head p {
+  max-width: 62ch;
+  color: var(--ink-soft);
+  font-size: var(--t-lead);
+  line-height: 1.6;
+}
+
+/* ---------------------------------------------------------------- buttons and links (HeroUI classes + the motion hooks) */
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.btn {
+  min-height: 48px;
+  padding-inline: 22px;
+  /* the app's button corner: HeroUI's calc(var(--radius) * 3) */
+  border-radius: calc(var(--radius) * 3);
+  font-size: 15px;
+  font-weight: 500;
+  text-decoration: none;
+}
+.btn--secondary {
+  background: var(--card);
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+}
+.btn svg {
+  width: 18px;
+  height: 18px;
+}
+.link {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+/* ---------------------------------------------------------------- the GitHub star button */
+/* the mark, Star, and the count in its own half (the nav pares it down: site.css) */
+.star-btn {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  height: 40px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition:
+    color 320ms var(--m-ease, ease),
+    border-color 320ms var(--m-ease, ease),
+    background-color 140ms var(--m-ease, ease);
+}
+.star-btn > svg {
+  width: 18px;
+  height: 18px;
+  margin-left: 14px;
+}
+.star-btn__label {
+  padding: 0 14px 0 8px;
+}
+.star-btn__count {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 100%;
+  padding: 0 14px 0 12px;
+  border-left: 1px solid var(--line-strong);
+  font-variant-numeric: tabular-nums;
+}
+.star-btn__count svg {
+  width: 14px;
+  height: 14px;
+}
+.star-btn:hover {
+  background: rgb(11 27 63 / 0.04);
+}
+@media (max-width: 860px) {
+  .star-btn {
+    margin-left: auto;
+  }
+  .star-btn__label {
+    display: none;
+  }
+  .star-btn > svg {
+    margin-right: 10px;
+  }
+}
+
+/* ---------------------------------------------------------------- hero */
+.hero {
+  --h: 1;
+  height: 100svh;
+  padding-top: calc(var(--nav) + var(--hgap));
+  padding-bottom: var(--hpadb);
+}
+.hero .wrap {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.hero h1 {
+  max-width: 30ch;
+  font-size: var(--t-h1);
+}
+.hero__lead {
+  max-width: 58ch;
+  color: var(--ink-soft);
+  font-size: var(--t-lead);
+}
+.hero-visual {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin-top: 32px;
+}
+@media (max-width: 639px) {
+  .hero .actions {
+    flex-direction: column;
+  }
+  .hero .btn {
+    width: 100%;
+  }
+  .hero-visual {
+    margin-top: 28px;
+  }
+}
+
+/* ---------------------------------------------------------------- cards (one recipe) */
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: var(--t-label);
+  font-weight: 500;
+  white-space: nowrap;
+}
+.chip--blue {
+  background: var(--blue-soft);
+  color: var(--blue-deep);
+}
+.chip--green {
+  background: var(--green-soft);
+  color: var(--green);
+}
+.chip--grey {
+  background: var(--tint);
+  color: var(--muted);
+  border: 1px solid var(--line);
+}
+.chip svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------------------------------------------------------------- live UI fragments */
+.ui {
+  font-family: var(--sans);
+  font-size: var(--t-small);
+  color: var(--ink);
+}
+.avatar {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--blue-deep));
+  color: #fff;
+  font-weight: 600;
+}
+.ui-name {
+  font-weight: 600;
+}
+.ui-sub {
+  color: var(--muted);
+  font-size: var(--t-label);
+}
+.ph {
+  display: block;
+  height: 8px;
+  border-radius: 4px;
+  background: var(--surface-tertiary);
+}
+.ph--strong {
+  background: var(--border);
+}
+.ui-label {
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+.doc__line {
+  display: flex;
+  gap: 8px;
+  align-items: baseline;
+  line-height: 1.5;
+}
+.doc__line::before {
+  content: '';
+  flex: none;
+  width: 4px;
+  height: 4px;
+  margin-top: 9px;
+  border-radius: 50%;
+  background: var(--ink-soft);
+}
+.doc__line--new {
+  margin-inline: -10px;
+  padding: 6px 10px;
+  border-radius: 10px;
+  background: var(--blue-soft);
+}
+.doc__line--new mark {
+  background: none;
+  color: var(--blue-deep);
+  font-weight: 600;
+}
+/* a suggestion with its evidence */
+.code {
+  border-radius: var(--r-sm);
+  background: #0f1a33;
+  color: #c9d6f2;
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.75;
+  overflow: hidden;
+}
+
+/* the job analysis */
+.cover {
+  display: grid;
+  gap: 8px;
+}
+
+/* ---------------------------------------------------------------- card mocks: pills and templates */
+/* CraftCV's actions as floating, staggered pills */
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  justify-self: start;
+  padding: 12px 20px 12px 14px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 14px 30px -14px rgb(8 40 90 / 0.45);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+.action svg {
+  width: 20px;
+  height: 20px;
+  color: var(--blue);
+}
+.action--left {
+  rotate: -3deg;
+}
+.action--right {
+  justify-self: end;
+  rotate: 3deg;
+}
+
+/* card three: three templates, fanned and bleeding off the foot */
+.sheet {
+  position: absolute;
+  display: grid;
+  align-content: start;
+  gap: 6px;
+  width: 62%;
+  aspect-ratio: 1 / 1.3;
+  padding: 18px 16px;
+  border-radius: 6px;
+  background: #ffffff;
+  box-shadow: 0 18px 40px -20px rgb(8 40 90 / 0.5);
+  color: var(--ink);
+}
+.sheet .ph {
+  height: 5px;
+}
+.sheet__name {
+  font-family: var(--serif);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.1;
+}
+.sheet__role {
+  color: var(--blue-deep);
+  font-size: 11px;
+  font-weight: 600;
+}
+.sheet__rule {
+  height: 1px;
+  margin: 4px 0;
+  background: var(--line-strong);
+}
+.sheet--a {
+  top: 0;
+  right: -8%;
+  rotate: 4deg;
+}
+.sheet--b {
+  top: 40px;
+  left: -6%;
+  rotate: -5deg;
+}
+.sheet--b .sheet__name {
+  font-family: var(--sans);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.sheet--c {
+  top: 110px;
+  left: 20%;
+  z-index: 1;
+}
+.sheet--c .sheet__rule {
+  background: var(--blue);
+}
+
+/* card hover: what is inside each card answers the pointer, the clouds drift a little */
+.action,
+.sheet {
+  transition:
+    top 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    translate 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    rotate 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.3s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .action,
+  .sheet {
+    transition: none;
+  }
+}
+
+/* ---------------------------------------------------------------- compare: a CV page diff */
+main > #compare {
+  --scroll: 300vh;
+}
+.compare {
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 32px 64px;
+  height: 100%;
+}
+.compare__text {
+  display: grid;
+  /* the words and the key as one block, centred beside the page */
+  align-content: center;
+  gap: 40px;
+}
+/* a key to the page's marks, set in the page's own marks */
+.compare__key {
+  display: grid;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+.compare__key li {
+  display: grid;
+  grid-template-columns: 128px minmax(0, 1fr);
+  align-items: baseline;
+  gap: 16px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink-soft);
+}
+.compare__mark {
+  justify-self: start;
+  font-size: var(--t-small);
+}
+.compare__mark :is(mark, code) {
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+.compare__mark mark {
+  background: #fff0b3;
+  color: var(--ink);
+}
+.key__plain {
+  color: var(--muted);
+}
+/* the page on the site's sky card, running off its foot */
+.compare__panel {
+  position: relative;
+  /* the whole page on the sky, with the same margin above and below, centred beside the words */
+  align-self: center;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+  padding: 40px 32px;
+  border-radius: 24px;
+  background:
+    url('/sky/clouds-photo.jpg') center bottom / cover no-repeat,
+    #3a78cf;
+}
+/* an A4 sheet, its text scaled to its width */
+.a4 {
+  /* as wide as the column allows, and short enough that the whole sheet and its margins fit
+     the screen: the stage's height less the panel's 80px of padding, in A4 proportion */
+  width: min(100%, 500px, (100svh - var(--padt) - var(--padb) - 80px) * 210 / 297);
+  margin-inline: auto;
+  aspect-ratio: 210 / 297;
+  /* the divider: at the right edge until the scroll starts, at the left edge by the end */
+  --x: calc((1 - clamp(0, (var(--p, 0.5) - 0.12) / 0.72, 1)) * 100%);
+}
+.a4__frame {
+  position: relative;
+  height: 100%;
+  border-radius: 6px;
+  /* one shadow for both pages, so the uncovered half casts no second one */
+  box-shadow: 0 30px 80px -24px rgb(8 40 90 / 0.55);
+  container-type: inline-size;
+}
+.a4__page {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  padding: 13cqw 8cqw 9cqw;
+  border-radius: 6px;
+  background: #fff;
+  color: var(--ink-soft);
+  font-size: 2.6cqw;
+  line-height: 1.55;
+}
+.a4__page header {
+  padding-bottom: 3cqw;
+  border-bottom: 1px solid var(--line-strong);
+}
+.a4__page h3 {
+  font-family: var(--serif);
+  font-size: 6cqw;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--ink);
+}
+.a4__page header p {
+  margin-top: 1cqw;
+  font-size: 2.2cqw;
+  color: var(--muted);
+}
+.a4__page h4 {
+  margin: 5.2cqw 0 1.6cqw;
+  font-family: var(--mono);
+  font-size: 1.9cqw;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.a4__job {
+  display: flex;
+  justify-content: space-between;
+  gap: 2cqw;
+  margin-top: 2.6cqw;
+  color: var(--ink);
+}
+.a4__job span {
+  color: var(--muted);
+  white-space: nowrap;
+}
+.a4__page ul {
+  display: grid;
+  gap: 1.1cqw;
+  margin: 1.2cqw 0 0;
+  padding-left: 3.4cqw;
+}
+.a4__page mark {
+  padding: 0 0.3cqw;
+  border-radius: 0.4cqw;
+  background: #fff0b3;
+  color: var(--ink);
+}
+.a4__label {
+  position: absolute;
+  top: 3cqw;
+  left: 3cqw;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 999px;
+  background: var(--tint);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: var(--t-label);
+  font-weight: 600;
+  line-height: 1.2;
+}
+.a4__after .a4__label {
+  right: 3cqw;
+  left: auto;
+  background: var(--blue-soft);
+  border-color: transparent;
+  color: var(--blue-deep);
+}
+.a4__label svg {
+  width: 14px;
+  height: 14px;
+}
+/* the tailored page, uncovered from the divider rightwards */
+.a4__after {
+  position: absolute;
+  inset: 0;
+  clip-path: inset(-40px -40px -40px var(--x));
+}
+.a4__divider {
+  position: absolute;
+  top: -40px;
+  bottom: -40px;
+  left: var(--x);
+  width: 2px;
+  margin-left: -1px;
+  background: #fff;
+  box-shadow:
+    0 0 0 1px rgb(8 40 90 / 0.12),
+    0 0 16px rgb(8 40 90 / 0.25);
+}
+.a4__handle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  translate: -50% -50%;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--blue);
+  box-shadow: 0 6px 20px -4px rgb(8 40 90 / 0.45);
+}
+.a4__handle svg {
+  width: 20px;
+  height: 20px;
+}
+.a4__after,
+.a4__divider {
+  transition:
+    clip-path 0.25s ease-out,
+    left 0.25s ease-out;
+}
+@media (prefers-reduced-motion: reduce) {
+  .a4__after,
+  .a4__divider {
+    transition: none;
+  }
+}
+@media (max-width: 1023px) {
+  .compare {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    gap: 24px;
+  }
+  .compare__key {
+    display: none;
+  }
+  .compare__panel {
+    padding: 28px 24px;
+  }
+  /* stacked under the words: leave room for them too */
+  .a4 {
+    width: min(100%, 500px, (100svh - var(--padt) - var(--padb) - 240px) * 210 / 297);
+  }
+}
+@media (max-width: 639px) {
+  .compare__panel {
+    padding: 20px 16px;
+    border-radius: 20px;
+  }
+  .a4__page {
+    font-size: 2.8cqw;
+  }
+}
+
+/* ---------------------------------------------------------------- the hero sky on a phone */
+@media (max-width: 639px) {
+  /* a tall, narrow screen: a closer crop puts the photograph's open middle behind the words */
+  .hero .sky-scene {
+    background-size: auto 130%;
+  }
+}
+
+/* ---------------------------------------------------------------- tablet and phone */
+@media (max-width: 639px) {
+  .actions .btn {
+    width: 100%;
+  }
+}
+
+/* the sky behind the hero and the download page: the cloud photograph, its open sky at the
+   top behind the words and its clouds below */
+.sky-scene {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: url('/sky/clouds-photo.jpg') center top / cover no-repeat #3a78cf;
+  pointer-events: none;
+}
+/* the sky settles into the white page below it */
+.sky-scene::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  height: 16%;
+  background: linear-gradient(180deg, rgb(255 255 255 / 0), #ffffff);
+}
+/* a soft blue scrim behind the words, so white text holds over the brightest sky */
+.sky-scene::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: radial-gradient(ellipse 60% 50% at 50% 32%, rgb(30 90 190 / 0.3), transparent 72%);
+}
+
+/* words and buttons on the blue sky */
+.on-sky {
+  --action: #ffffff;
+  --bg: var(--blue-deep);
+  color: #ffffff;
+}
+.on-sky :is(h1, h2) {
+  color: #ffffff;
+  text-shadow: 0 2px 24px rgb(8 40 90 / 0.25);
+}
+.on-sky .hero__lead {
+  color: rgb(255 255 255 / 0.95);
+}
+.on-sky .btn--primary {
+  background: #ffffff;
+  color: var(--blue-deep);
+}
+.on-sky .btn--secondary {
+  background: rgb(255 255 255 / 0.18);
+  backdrop-filter: blur(8px);
+  border-color: rgb(255 255 255 / 0.75);
+  color: #ffffff;
+}
+
+/* ---------------------------------------------------------------- the release page */
+.download {
+  min-height: 100svh;
+  height: auto;
+  padding-top: calc(var(--nav) + var(--hgap));
+}
+.download > .wrap {
+  display: grid;
+  grid-template-rows: 1fr auto;
+  gap: 64px;
+  min-height: calc(100svh - var(--nav) - var(--hgap) - var(--padb));
+}
+.download__body {
+  display: grid;
+  justify-items: center;
+  align-content: start;
+  gap: 32px;
+}
+.download__text {
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+  text-align: center;
+}
+.download h1 {
+  font-size: var(--t-h1);
+}
+.release {
+  display: grid;
+  gap: 4px;
+  width: min(720px, 100%);
+  padding: 28px;
+}
+.release h2 {
+  font-size: 28px;
+}
+.release__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding-bottom: 16px;
+}
+.release__head > div {
+  display: grid;
+  gap: 4px;
+  margin-right: auto;
+}
+.release__row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px 0;
+  border-top: 1px solid var(--line);
+}
+.release__icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: var(--tint);
+}
+.release__icon svg {
+  width: 24px;
+  height: 24px;
+}
+.release__name {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+.release__name b {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+}
+.release__row .btn {
+  min-height: 40px;
+  padding-inline: 18px;
+  font-size: 14px;
+}
+.release__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 24px;
+  padding-top: 16px;
+  border-top: 1px solid var(--line);
+  font-size: var(--t-small);
+}
+.release--soon {
+  justify-items: start;
+  gap: 16px;
+  padding: 36px;
+}
+.release--soon p {
+  max-width: 52ch;
+  color: var(--ink-soft);
+}
+/* the white card keeps the page's dark text, not the sky's white */
+.on-sky .release {
+  color: var(--ink);
+}
+.on-sky .release h2 {
+  color: var(--ink);
+  text-shadow: none;
+}
+/* inside the white card the buttons go back to the page's own blue and outline */
+.on-sky .release .btn--primary {
+  --action: var(--blue);
+  --bg: #ffffff;
+  background: var(--blue);
+  color: var(--accent-foreground);
+}
+.on-sky .release .btn--secondary {
+  background: var(--card);
+  border-color: var(--line-strong);
+  color: var(--ink);
+}
+@media (max-width: 639px) {
+  .download__text {
+    justify-items: start;
+    text-align: left;
+  }
+  .release,
+  .release--soon {
+    padding: 20px;
+  }
+  .release__row {
+    flex-wrap: wrap;
+  }
+  .release__row .btn {
+    width: 100%;
+  }
+}
+
+/* ---------------------------------------------------------------- the hero's CV stack */
+.cv-stack {
+  position: relative;
+  height: 100%;
+}
+.cv {
+  position: absolute;
+  top: 0;
+  /* all three CVs one size; the clouds cover their lower part */
+  width: 480px;
+  height: 540px;
+  overflow: hidden;
+  /* the lower part dissolves, so no edge shows between the puffs of cloud */
+  -webkit-mask-image: linear-gradient(180deg, #000 66%, rgb(0 0 0 / 0.7) 84%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 66%, rgb(0 0 0 / 0.7) 84%, transparent 100%);
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  padding: 24px 28px;
+  border: 1px solid var(--line);
+  border-radius: var(--r-lg);
+  background: var(--card);
+  box-shadow: 0 24px 60px -24px rgb(8 40 90 / 0.45);
+}
+.cv--front {
+  z-index: 1;
+  left: 50%;
+  max-width: 100%;
+  translate: -50% 0;
+}
+.cv--left,
+.cv--right {
+  z-index: 0;
+  opacity: 0.96;
+}
+.cv--left,
+.cv--right {
+  top: 24px;
+}
+/* tucked behind the front CV's edges and tilted outward, like a fanned hand of cards */
+.cv--left {
+  left: calc(50% - 450px);
+  rotate: -7deg;
+  transform-origin: bottom right;
+}
+.cv--right {
+  left: calc(50% - 30px);
+  rotate: 7deg;
+  transform-origin: bottom left;
+}
+.cv__head {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.cv__role {
+  margin-left: auto;
+  padding-top: 2px;
+}
+.cv__bar {
+  display: block;
+  width: 96px;
+  height: 4px;
+  margin-top: 8px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, var(--blue) 45%, var(--line) 45%);
+}
+.cv__meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+.cv__meta svg {
+  width: 14px;
+  height: 14px;
+}
+.cv__block {
+  display: grid;
+  gap: 8px;
+}
+.cv__text {
+  color: var(--ink-soft);
+  line-height: 1.55;
+}
+.cv__when {
+  margin-top: -6px;
+  color: var(--blue-deep);
+  font-size: var(--t-label);
+}
+.avatar--face {
+  background: var(--sky);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+.avatar--sm {
+  width: 32px;
+  height: 32px;
+  font-size: 12px;
+}
+@media (max-width: 1023px) {
+  .cv--left,
+  .cv--right {
+    display: none;
+  }
+}
+@media (max-width: 639px) {
+  .cv {
+    padding: 20px;
+  }
+  .cv--front {
+    width: 100%;
+  }
+  .cv__role {
+    display: none;
+  }
+}
+
+/* the hero's layers: sky, the CVs, the cloud veil (z-index 2), then the words in front of
+   it. The wrap gets no stacking context of its own, so its children
+   stack against the veil directly. */
+.hero > .wrap {
+  z-index: auto;
+}
+
+/* starred: a filled gold star; waiting on the GitHub popup: dimmed */
+.star-btn[data-starred='true'] .star-btn__count svg {
+  color: #e3a008;
+}
+/* the icon's path carries fill="none"; a rule on the path itself outranks that attribute */
+.star-btn[data-starred='true'] .star-btn__count svg path {
+  fill: #f5b301;
+}
+.star-btn[aria-busy='true'] {
+  opacity: 0.6;
+  cursor: progress;
+}
+
+/* ================================================================ scroll scenes
+   ScrollScenes writes each [data-scene] section's progress to --p (0 to 1). Without it (no
+   script, or reduced motion) --p is unset: the defaults below are each scene's finished
+   picture, 1 for the pinned scene and 0 for the hero, which rests at the top. */
+
+/* the hero, scrolling away: the side CVs fan further out */
+.hero {
+  --x: var(--p, 0);
+}
+.cv--left {
+  rotate: calc(-7deg - var(--x) * 6deg);
+  translate: calc(var(--x) * -70px) calc(var(--x) * 50px);
+}
+.cv--right {
+  rotate: calc(7deg + var(--x) * 6deg);
+  translate: calc(var(--x) * 70px) calc(var(--x) * 50px);
+}
+.cv--front {
+  translate: -50% calc(var(--x) * -24px);
+}
+
+/* first load: the front CV rises out of the clouds, the side CVs fan out from behind it. Keyframes use transform, which sits on top of the scroll parallax's own
+   translate and rotate, so the two never fight. */
+.cv--front {
+  animation: cv-rise 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.15s backwards;
+}
+.cv--left {
+  animation: cv-fan-left 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.55s backwards;
+}
+.cv--right {
+  animation: cv-fan-right 1.2s cubic-bezier(0.22, 1, 0.36, 1) 0.55s backwards;
+}
+@keyframes cv-rise {
+  from {
+    transform: translateY(220px);
+    opacity: 0;
+  }
+}
+@keyframes cv-fan-left {
+  from {
+    transform: translateX(200px) translateY(60px) rotate(7deg);
+    opacity: 0;
+  }
+}
+@keyframes cv-fan-right {
+  from {
+    transform: translateX(-200px) translateY(60px) rotate(-7deg);
+    opacity: 0;
+  }
+}
+
+/* pinned scenes: a tall section whose stage stays on screen while --p runs from 0 to 1 */
+main > section[data-scene='pin'] {
+  height: var(--scroll, 260vh);
+  padding: 0;
+  /* clip, not hidden: hidden would make the section a scroll box and stop the stage sticking */
+  overflow: clip;
+}
+[data-scene='pin'] > .pin {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  padding-top: var(--padt);
+  padding-bottom: var(--padb);
+  overflow: clip;
+}
+@media (prefers-reduced-motion: reduce) {
+  main > section[data-scene='pin'] {
+    height: 100svh;
+  }
+}
+@media (max-width: 639px) {
+  main > section[data-scene='pin'] {
+    min-height: 0;
+  }
+  [data-scene='pin'] > .pin {
+    padding-top: calc(var(--nav) + 24px);
+  }
+}

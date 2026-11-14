@@ -4,7 +4,6 @@ import { Button, EmptyState, ToggleButton, ToggleButtonGroup, Typography } from 
 import { Icon } from '@/common/ui/icons'
 import Page from '@/common/ui/Page'
 import { useAppStore } from '@/common/store/app-store'
-import SetupChecklist from '@/features/onboarding/SetupChecklist'
 import { startOver } from '@/features/workspace/store'
 import ApplicationBoard from './components/ApplicationBoard'
 import ApplicationTable from './components/ApplicationTable'
@@ -76,7 +75,6 @@ export default function ApplicationsPage() {
     >
       {applications && !applications.length ? (
         <>
-          <SetupChecklist onStart={start} />
           <EmptyState className="applications-empty">
             <Icon icon="lucide:kanban" width={30} />
             <Typography.Heading level={3}>No applications yet</Typography.Heading>

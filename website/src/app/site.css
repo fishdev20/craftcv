@@ -1,0 +1,1214 @@
+/* The site's pages, scoped under .site: a paper ground, a sky hero with the name set huge behind
+   the CVs, a white dome at the foot of the screen that holds the download, a sticky list beside
+   scrolling screens, cards on the cloud photograph with mono pill labels, and a dotted privacy
+   panel. Motion is soft: things rise, blur in and settle. */
+
+.site {
+  --heading-serif: var(--font-newsreader), Georgia, serif;
+  --label-mono: var(--font-jetbrains), ui-monospace, monospace;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  /* the width of everything from the card grid down: cards, privacy, the close and the footer */
+  --content-width: 980px;
+  /* one gap between every section, and one type scale for running text */
+  --section-gap: clamp(112px, 10vw + 24px, 168px);
+  --lead-size: clamp(17px, 0.3vw + 15px, 19px);
+  --soft-shadow: 0 1px 2px #0000000a, 0 12px 40px -18px #0000002e;
+
+  min-height: 100svh;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.5;
+  letter-spacing: -0.01em;
+}
+/* globals.css frames each section as a full screen; the home page's other sections size to
+   their content (the hero, the pinned before/after and the download page keep the frame) */
+.site main > section:not(.hero, [data-scene='pin'], .download) {
+  height: auto;
+  padding: 0;
+  overflow: visible;
+}
+.site .hero {
+  width: 100%;
+  letter-spacing: normal;
+}
+.site :is(h1, h2, h3):not(.hero *) {
+  margin: 0;
+  font-family: var(--heading-serif);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+
+/* ---------------------------------------------------------------- motion: rise and settle (the hero's name) */
+@keyframes rise {
+  from {
+    opacity: 0;
+    translate: 0 24px;
+    filter: blur(8px);
+  }
+}
+
+/* ---------------------------------------------------------------- the nav pill and the float */
+.nav {
+  position: fixed;
+  top: 24px;
+  left: 50%;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 14px 6px 8px;
+  translate: -50% 0;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: rgb(255 255 255 / 0.86);
+  backdrop-filter: blur(12px) saturate(1.4);
+  box-shadow: var(--soft-shadow);
+}
+.nav__mark {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 38px;
+  margin-right: 10px;
+  padding-right: 4px;
+  border-radius: 10px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.nav__mark img {
+  flex: none;
+}
+/* the GitHub star button, pared down to a nav link: the GitHub mark and the count, no
+   border or word (its label still names it for screen readers) */
+.nav .star-btn {
+  gap: 6px;
+  height: auto;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 8px;
+  color: var(--ink-soft);
+  font-size: 16px;
+  font-weight: 400;
+  transition: color 0.2s ease;
+}
+.nav .star-btn:hover {
+  background: none;
+  color: var(--ink);
+}
+.nav .star-btn > svg {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+}
+.nav .star-btn__label {
+  display: none;
+}
+.nav .star-btn__count {
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  color: inherit;
+}
+/* the name beside the mark, in the hero's italic */
+.nav__mark span {
+  font-family: var(--display);
+  font-size: 24px;
+  font-style: italic;
+  letter-spacing: -0.01em;
+  line-height: 1;
+}
+.nav a:not(.nav__mark) {
+  padding: 6px 8px;
+  border-radius: 8px;
+  color: var(--ink-soft);
+  font-size: 16px;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.nav a:not(.nav__mark):hover {
+  color: var(--ink);
+}
+.float-download {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 40;
+  gap: 8px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgb(251 250 246 / 0.88);
+  backdrop-filter: blur(12px);
+  box-shadow: var(--soft-shadow);
+  color: var(--ink);
+  font-size: 16px;
+  text-decoration: none;
+  opacity: 0;
+  translate: 0 -140%;
+  pointer-events: none;
+  transition:
+    translate 0.6s var(--ease-out),
+    opacity 0.4s ease;
+}
+.float-download[data-shown] {
+  opacity: 1;
+  translate: 0 0;
+  pointer-events: auto;
+}
+.float-download svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ---------------------------------------------------------------- buttons: HeroUI as pills */
+.site .pill-btn {
+  gap: 8px;
+  text-decoration: none;
+  transition:
+    background 0.2s ease,
+    translate 0.2s var(--ease-out);
+}
+.site .pill-btn:active {
+  translate: 0 1px;
+}
+.site .pill-btn svg {
+  width: 16px;
+  height: 16px;
+  transition: translate 0.3s var(--ease-out);
+}
+.site .pill-btn--dark {
+  min-width: min(440px, calc(100vw - 48px));
+  min-height: 56px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--accent-foreground);
+  font-size: 19px;
+  font-weight: 500;
+}
+.site .pill-btn--dark:hover {
+  background: color-mix(in oklch, var(--accent) 88%, black);
+}
+.site .pill-btn--dark:hover svg {
+  translate: 0 3px;
+}
+.site .pill-btn--soft {
+  border-radius: 999px;
+  background: var(--tint);
+  color: var(--ink);
+  font-size: 15px;
+  font-weight: 500;
+}
+.site .pill-btn--soft:hover {
+  background: var(--blue-soft);
+}
+.site .pill-btn--soft:hover svg {
+  translate: 3px 0;
+}
+
+/* ---------------------------------------------------------------- the window around a screen */
+.app-window {
+  isolation: isolate;
+  overflow: hidden;
+  border: 5px solid var(--sky);
+  border-radius: 16px;
+  background: var(--sky);
+  box-shadow:
+    0 1px 2px #0000000d,
+    0 30px 70px -30px #00000040;
+}
+.app-window[data-tint='warm'] {
+  border-color: var(--sky-deep);
+  background: var(--sky-deep);
+}
+.app-window[data-tint='cool'] {
+  border-color: var(--blue-soft);
+  background: var(--blue-soft);
+}
+.app-window__bar {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  height: 34px;
+  padding: 0 12px;
+  color: var(--ink);
+  font-size: 13px;
+}
+.app-window__lights {
+  display: flex;
+  gap: 7px;
+}
+.app-window__lights i {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ff5f57;
+}
+.app-window__lights i:nth-child(2) {
+  background: #febc2e;
+}
+.app-window__lights i:nth-child(3) {
+  background: #28c840;
+}
+.app-window__path {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.app-window__path span {
+  color: var(--muted);
+}
+.app-window img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  transition: scale 0.6s var(--ease-out);
+}
+@media (hover: hover) {
+  .app-window:hover img {
+    scale: 1.02;
+  }
+}
+.site :is(a, button):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 10px;
+}
+
+.home {
+  display: grid;
+  justify-items: center;
+  /* clip, not hidden: the dome's ellipse ends here instead of stretching the page, and the
+     dome can still stick (clip makes no scroll container) */
+  overflow: clip;
+}
+
+/* ---------------------------------------------------------------- hero: one line, the name behind */
+.site .hero--simple .wrap {
+  /* the name's size; the CVs rise over its lower part by a share of it */
+  --hero-word-size: clamp(124px, 19.5vw, 300px);
+  align-items: center;
+}
+.site .hero__title {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: #ffffff;
+  font-family: var(--heading-serif);
+  font-size: clamp(28px, 2.2vw + 12px, 46px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-align: center;
+  text-shadow: 0 1px 24px rgb(8 40 90 / 0.25);
+}
+/* the name, set huge in white behind the CVs; the stack rises over its lower half */
+.hero__word {
+  position: relative;
+  z-index: 0;
+  /* clear air between the title and the wordmark's tallest letters */
+  margin: clamp(16px, 2.4vw, 36px) 0 0;
+  color: #ffffff;
+  /* the footer wordmark's face (Instrument Serif italic), so the name is set one way */
+  font-family: var(--display);
+  font-size: var(--hero-word-size);
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-shadow: 0 2px 40px rgb(8 40 90 / 0.18);
+  user-select: none;
+  animation: rise 1.1s var(--ease-out) 0.1s both;
+}
+.site .hero--simple .hero-visual {
+  z-index: 1;
+  width: 100%;
+  margin-top: calc(var(--hero-word-size) * -0.34);
+}
+/* large screens: the title, name and CVs stop growing at 1440, so the whole composition is
+   scaled up in steps, held by the screen's height as well so it never runs off the first screen */
+@media (min-width: 1800px) and (min-height: 1040px) {
+  .site .hero--simple .wrap,
+  .dock .pill-btn--dark,
+  .dock__note,
+  .footer {
+    zoom: 1.2;
+  }
+}
+@media (min-width: 2160px) and (min-height: 1200px) {
+  .site .hero--simple .wrap,
+  .dock .pill-btn--dark,
+  .dock__note,
+  .footer {
+    zoom: 1.4;
+  }
+}
+@media (min-width: 2600px) and (min-height: 1340px) {
+  .site .hero--simple .wrap,
+  .dock .pill-btn--dark,
+  .dock__note,
+  .footer {
+    zoom: 1.6;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__word {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------- before and after */
+/* the pinned diff (Compare, base styles in globals.css), restyled: serif heading,
+   mono labels, a paper card on the cloud card */
+.site main > #compare {
+  width: 100%;
+  margin-top: var(--section-gap);
+}
+/* the pinned stage keeps clear of the download dome at the foot of the screen */
+.site #compare > .pin {
+  padding-bottom: calc(var(--padb) + 72px);
+}
+.site #compare .compare {
+  width: min(1180px, 100% - 48px);
+}
+/* the section's label is removed at the user's request */
+.site #compare .eyebrow {
+  display: none;
+}
+.site #compare h2 {
+  font-family: var(--heading-serif);
+  font-size: clamp(40px, 3.4vw + 14px, 64px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+.site #compare h2 .muted {
+  display: block;
+  color: var(--muted);
+  font-style: italic;
+}
+.site #compare .section-head p {
+  color: var(--ink-soft);
+  font-family: var(--sans);
+}
+.site #compare .compare__key {
+  border-top-color: var(--line);
+}
+.site #compare .compare__key li {
+  border-bottom-color: var(--line);
+  color: var(--ink-soft);
+  font-size: 15px;
+}
+.site #compare .a4__frame {
+  box-shadow:
+    0 1px 2px #0000000d,
+    0 30px 70px -30px #00000040;
+}
+.site #compare .a4__page h3 {
+  font-family: var(--heading-serif);
+}
+.site #compare .a4__page h4 {
+  font-family: var(--label-mono);
+}
+.site #compare .a4__label {
+  border: 0;
+  border-radius: 999px;
+  background: var(--surface);
+  box-shadow: var(--soft-shadow);
+  color: var(--ink-soft);
+  font-family: var(--label-mono);
+  font-size: 10.5px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.site #compare .a4__after .a4__label {
+  background: var(--ink);
+  color: var(--surface);
+}
+.site #compare .a4__divider {
+  background: var(--ink);
+  box-shadow: none;
+}
+.site #compare .a4__handle {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--ink);
+  box-shadow: var(--soft-shadow);
+}
+
+/* ---------------------------------------------------------------- the dome at the foot */
+/* held at the foot of the screen (sticky), shallow, with only the pill showing; over the last
+   stretch --land runs 0 to 1: the curve deepens, the pill grows and its note fades in, and
+   then the dome lets go and rides up with the page above the footer */
+.dock {
+  --land: 0;
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  width: 100%;
+  /* the note's line and its gap: what slides below the screen's foot once the dome settles */
+  --dock-note: 42px;
+  padding: 42px 24px 28px;
+  pointer-events: none;
+  translate: 0 calc((1 - var(--land)) * var(--dock-note));
+}
+.dock::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -25%;
+  z-index: -1;
+  width: 150%;
+  /* the ellipse's height sets how deep its top curve dips at the screen's edges */
+  /* capped on very wide screens, where the curve would otherwise dip below the dome's foot at
+     the edges and be cut off there */
+  height: calc(min(56vw, 840px) + min(22vw, 330px) * var(--land));
+  border-radius: 50%;
+  background: var(--bg);
+  box-shadow:
+    0 -1px 0 #0000000a,
+    0 -18px 40px -22px #00000040;
+}
+.dock > * {
+  pointer-events: auto;
+}
+.site .dock .pill-btn--dark {
+  scale: calc(0.85 + 0.15 * var(--land));
+  transform-origin: center top;
+}
+.dock__note {
+  color: var(--ink-soft);
+  font-size: 15px;
+  opacity: var(--land);
+  translate: 0 calc((1 - var(--land)) * -6px);
+}
+.dock__mark {
+  display: block;
+  height: 0;
+}
+
+/* ---------------------------------------------------------------- footer: mono columns */
+.footer {
+  position: relative;
+  z-index: 31;
+  width: min(var(--content-width), 100% - 48px);
+  margin: 0 auto;
+  /* no bottom padding: the wordmark ends the page */
+  padding: 24px 0 0;
+  background: var(--bg);
+  font-family: var(--label-mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.footer__cols {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  gap: 32px;
+  padding-bottom: 32px;
+  border-bottom: 1px solid var(--line);
+}
+.site .footer h2 {
+  margin-bottom: 12px;
+  color: var(--ink);
+  font-family: var(--label-mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  line-height: 1.4;
+}
+.footer ul {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.footer a {
+  color: var(--muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.footer a:hover {
+  color: var(--ink);
+}
+.stamp {
+  width: 96px;
+  height: 96px;
+  overflow: visible;
+}
+.stamp text {
+  fill: var(--ink);
+  font-family: var(--heading-serif);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+}
+.stamp circle {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 0.7;
+}
+.footer__bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: end;
+  gap: 16px;
+  padding-top: 22px;
+  color: var(--ink);
+}
+.footer__gap {
+  margin-left: 28px;
+}
+.footer__credit {
+  text-align: center;
+}
+/* the name set large across the foot, fading into the page; its frame clips the font's empty
+   space below the letters, so the page ends where the faded letters do */
+.footer__wordmark {
+  overflow: hidden;
+  text-transform: none;
+  letter-spacing: normal;
+}
+.footer__name {
+  margin: 32px 0 -0.1em;
+  font-family: var(--display);
+  font-size: clamp(88px, 24vw, 340px);
+  font-style: italic;
+  line-height: 0.82;
+  letter-spacing: -0.03em;
+  text-align: center;
+  white-space: nowrap;
+  background: linear-gradient(
+    180deg,
+    var(--ink) 15%,
+    color-mix(in oklch, var(--ink) 0%, transparent) 95%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  user-select: none;
+}
+
+/* ---------------------------------------------------------------- sections */
+.home-section {
+  display: grid;
+  justify-items: center;
+  width: min(1180px, 100% - 48px);
+  margin-top: var(--section-gap);
+}
+.section-label {
+  margin-bottom: 18px;
+  color: var(--muted);
+  font-family: var(--label-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.site .section-title {
+  font-size: clamp(40px, 3.4vw + 14px, 64px);
+  text-align: center;
+}
+
+/* the numbered list, held while the screens scroll */
+.feature-list {
+  display: grid;
+  grid-template-columns: minmax(0, 4fr) minmax(0, 7fr);
+  gap: 72px;
+  width: 100%;
+  margin-top: 72px;
+}
+.feature-list__list {
+  position: sticky;
+  /* five steps, the open one about three lines deep: held near the middle of the screen */
+  top: max(112px, calc(50svh - 230px));
+  align-self: start;
+  display: grid;
+  gap: 24px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.feature-list__list li {
+  position: relative;
+  padding-left: 24px;
+  color: var(--muted);
+  transition: color 0.4s ease;
+}
+.feature-list__list li::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  border-radius: 2px;
+  background: var(--accent);
+  scale: 1 0;
+  transform-origin: top;
+  transition: scale 0.6s var(--ease-out);
+}
+.feature-list__list li[data-active] {
+  color: var(--ink);
+}
+.feature-list__list li[data-active]::before {
+  scale: 1 1;
+}
+.feature-list small,
+.label-pill {
+  font-family: var(--label-mono);
+  font-size: 11px;
+  text-transform: uppercase;
+}
+.feature-list small {
+  color: var(--muted);
+}
+.site .feature-list h3 {
+  margin-top: 6px;
+  font-size: 26px;
+  letter-spacing: -0.03em;
+}
+/* the active item opens; the others keep only their titles */
+.feature-list__list p {
+  max-width: 34ch;
+  max-height: 0;
+  margin: 0;
+  overflow: hidden;
+  color: var(--ink-soft);
+  font-size: 16px;
+  line-height: 1.55;
+  opacity: 0;
+  transition:
+    max-height 0.6s var(--ease-out),
+    opacity 0.4s ease,
+    margin 0.6s var(--ease-out);
+}
+.feature-list__list li[data-active] p {
+  max-height: 10em;
+  margin-top: 12px;
+  opacity: 1;
+}
+.feature-list__shots {
+  display: grid;
+  gap: 120px;
+  padding-bottom: 20svh;
+}
+.feature-list__inline {
+  display: none;
+}
+
+/* bordered cards with a mono pill and a screen running off the foot */
+.feature-cards {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: 16px;
+  /* narrower than the section: a tighter grid of smaller cards */
+  width: min(100%, var(--content-width));
+  margin-top: 56px;
+}
+/* each card on the cloud photograph: open sky behind the words, clouds at the foot,
+   where a frosted band blurs the screen away */
+.feature-card {
+  position: relative;
+  isolation: isolate;
+  grid-column: span 5;
+  display: flex;
+  flex-direction: column;
+  min-height: 400px;
+  padding: 22px 24px 0;
+  overflow: hidden;
+  border-radius: 20px;
+  color: #ffffff;
+  background:
+    linear-gradient(#1d4f9a40, transparent 60%),
+    url('/sky/clouds-photo.jpg') center bottom / cover no-repeat,
+    #3a78cf;
+}
+.feature-card:has(.feature-card__shot, .feature-card__sheets)::after {
+  content: '';
+  position: absolute;
+  inset: auto 0 0;
+  z-index: 2;
+  height: 34%;
+  pointer-events: none;
+  background: linear-gradient(#ffffff00, #ffffff8c);
+  backdrop-filter: blur(14px);
+  mask: linear-gradient(transparent, #000 65%);
+}
+.feature-card[data-wide] {
+  grid-column: span 7;
+}
+/* the icon cards: open sky behind the words, the clouds down by the icons */
+.feature-card:has(.feature-card__tools) {
+  background-position:
+    0 0,
+    center top;
+}
+.label-pill {
+  align-self: flex-start;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--ink-soft);
+  letter-spacing: 0.06em;
+}
+.feature-card .label-pill {
+  background: #ffffff2e;
+  color: #ffffff;
+  box-shadow: inset 0 0 0 1px #ffffff40;
+  backdrop-filter: blur(8px);
+}
+.feature-card > p {
+  margin: 16px 0 0;
+  color: #ffffffe6;
+  text-shadow: 0 1px 12px #1d4f9a40;
+  font-size: 16px;
+  line-height: 1.55;
+}
+.site .feature-card__shot {
+  width: 112%;
+  margin: auto -2% -40px 8%;
+  padding-top: 0;
+  transition: translate 0.6s var(--ease-out);
+}
+/* the window sits below the words with at least this much air */
+.feature-card:has(.feature-card__shot) > p {
+  padding-bottom: 28px;
+}
+.feature-card:hover .feature-card__shot {
+  translate: 0 -10px;
+}
+.feature-card__tools {
+  display: flex;
+  gap: 10px;
+  margin: auto 0 40px;
+}
+.feature-card__tools span {
+  display: grid;
+  color: var(--ink);
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: var(--soft-shadow);
+}
+.feature-card__tools svg {
+  width: 24px;
+  height: 24px;
+}
+
+/* the action pills (CardMocks), tilted left and right down the card; on hover they straighten
+   and close in, one after another */
+.feature-card__actions {
+  display: grid;
+  align-content: center;
+  gap: 14px;
+  margin: auto 0 32px;
+  padding-top: 28px;
+}
+.feature-card__actions .action {
+  padding: 10px 18px 10px 12px;
+  font-size: 14px;
+}
+@media (hover: hover) {
+  .feature-card:hover .action--left {
+    rotate: 0deg;
+    translate: 10px 0;
+  }
+  .feature-card:hover .action--right {
+    rotate: 0deg;
+    translate: -10px 0;
+  }
+  .feature-card:hover .action:nth-child(2) {
+    transition-delay: 0.04s;
+  }
+  .feature-card:hover .action:nth-child(3) {
+    transition-delay: 0.08s;
+  }
+  .feature-card:hover .action:nth-child(4) {
+    transition-delay: 0.12s;
+  }
+  .feature-card:hover .action:nth-child(5) {
+    transition-delay: 0.16s;
+  }
+  .feature-card .action:hover {
+    translate: 0 -4px;
+    transition-delay: 0s;
+  }
+}
+
+/* the three templates (CardMocks), fanned and running off the card's foot; on hover they
+   spread further and the front one rises */
+.feature-card__sheets {
+  position: relative;
+  flex: 1;
+  min-height: 250px;
+  margin: 28px -24px 0;
+}
+.feature-card__sheets .sheet {
+  width: 40%;
+}
+.feature-card__sheets .sheet--a {
+  top: 16px;
+  right: 12%;
+}
+.feature-card__sheets .sheet--b {
+  top: 40px;
+  left: 12%;
+}
+.feature-card__sheets .sheet--c {
+  top: 76px;
+  left: 30%;
+}
+@media (hover: hover) {
+  .feature-card:hover .sheet--a {
+    rotate: 7deg;
+    translate: 14px -10px;
+  }
+  .feature-card:hover .sheet--b {
+    rotate: -8deg;
+    translate: -14px -4px;
+  }
+  .feature-card:hover .sheet--c {
+    translate: 0 -18px;
+  }
+  .feature-card .sheet:hover {
+    box-shadow: 0 26px 50px -20px rgb(8 40 90 / 0.6);
+  }
+  .feature-card:hover .sheet--a:hover,
+  .feature-card:hover .sheet--b:hover {
+    translate: 0 -22px;
+  }
+  .feature-card:hover .sheet--c:hover {
+    translate: 0 -30px;
+  }
+}
+
+/* the applications board: the app's statuses as columns, a few made-up jobs in each */
+.board {
+  display: grid;
+  /* four readable columns, wider than the card: the board runs off its right edge */
+  grid-template-columns: repeat(4, minmax(160px, 1fr));
+  width: max-content;
+  gap: 10px;
+  padding: 12px 12px 56px;
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 13px;
+}
+.board__col {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 12px;
+  background: var(--sky);
+}
+.board__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2px 2px;
+  color: var(--ink-soft);
+  font-family: var(--label-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.board__head b {
+  font-weight: 400;
+  color: var(--muted);
+}
+.board__job {
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--surface);
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 6px 14px -10px #0000004d;
+  transition: translate 0.5s var(--ease-out);
+}
+.board__job b {
+  overflow: hidden;
+  font-weight: 500;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.board__job small {
+  color: var(--muted);
+  font-size: 12px;
+}
+.board__score {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+.board__score i {
+  position: relative;
+  flex: 1;
+  height: 4px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: var(--line);
+}
+.board__score i::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--accent);
+  scale: var(--s) 1;
+  transform-origin: left;
+}
+/* on hover the interview card steps forward, as if picked up to move on */
+@media (hover: hover) {
+  .feature-card:hover .board__col:nth-child(3) .board__job {
+    translate: 0 -4px;
+  }
+}
+
+/* the privacy panel: a dotted outline, a lock on its top edge and the mark on its foot, and a
+   row of settings drifting past between the two lines of the title */
+.privacy {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 18px;
+  width: min(100%, var(--content-width));
+  padding: 104px 0 88px;
+  border: 1.5px dotted color-mix(in oklch, var(--muted) 70%, transparent);
+  border-radius: 12px;
+  text-align: center;
+}
+.privacy > p:not(.section-title) {
+  max-width: 50ch;
+  margin: 0;
+  padding: 0 24px;
+  color: var(--ink-soft);
+  font-size: var(--lead-size);
+}
+.site .privacy .section-title {
+  margin: 0;
+}
+.privacy__second {
+  margin-bottom: 36px !important;
+  font-family: var(--heading-serif);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+}
+.privacy .pill-btn {
+  margin-top: 20px;
+}
+.privacy__lock,
+.privacy__mark {
+  position: absolute;
+  left: 50%;
+  box-sizing: content-box;
+  translate: -50% 0;
+  background: var(--bg);
+}
+.privacy__lock {
+  top: -40px;
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 64px;
+  padding: 0 22px;
+  color: var(--ink);
+}
+.privacy__lock svg {
+  width: 40px;
+  height: 40px;
+  stroke-width: 1.2;
+}
+.privacy__mark {
+  bottom: -18px;
+  padding: 0 14px;
+}
+/* the settings: a strip that runs right to left forever, cut by the panel's edges */
+.switches {
+  width: 100%;
+  margin: 18px 0 10px;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+.switches__track {
+  display: flex;
+  gap: 18px;
+  width: max-content;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  animation: marquee 40s linear infinite;
+}
+.switches:hover .switches__track {
+  animation-play-state: paused;
+}
+@keyframes marquee {
+  to {
+    /* one copy of the list along, plus one gap, so the loop has no seam */
+    translate: calc(-50% - 9px) 0;
+  }
+}
+.switches li {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  padding: 8px 8px 8px 16px;
+  border-radius: 999px;
+  background: var(--tint);
+  color: var(--ink);
+  font-family: var(--label-mono);
+  font-size: 15px;
+  white-space: nowrap;
+}
+.switches i {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--line-strong);
+}
+.switches i[data-on] {
+  background: var(--accent);
+}
+.switches b {
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--surface);
+  font-weight: 400;
+}
+@media (prefers-reduced-motion: reduce) {
+  .switches__track {
+    animation: none;
+  }
+}
+@media (max-width: 639px) {
+  .privacy {
+    padding-top: 88px;
+  }
+  .switches li {
+    font-size: 13px;
+  }
+}
+
+.site main > section.ready {
+  padding: var(--section-gap) 24px 96px;
+}
+
+/* ---------------------------------------------------------------- smaller screens */
+@media (max-width: 1023px) {
+  .board {
+    zoom: 0.85;
+    /* still as wide as its window, whatever the zoom */
+    min-width: calc(100% / 0.85);
+  }
+  .feature-list {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .feature-list__list {
+    display: none;
+  }
+  .feature-list__shots {
+    gap: 72px;
+    padding-bottom: 0;
+  }
+  .feature-list__inline {
+    display: block;
+    margin-bottom: 20px;
+  }
+  .feature-list__inline p {
+    max-width: 52ch;
+    margin: 10px 0 0;
+    color: var(--ink-soft);
+  }
+  .feature-card,
+  .feature-card[data-wide] {
+    grid-column: 1 / -1;
+    min-height: 0;
+  }
+  /* short on a narrow screen: the photograph at the card's width, its clouds kept down low */
+  .feature-card:has(.feature-card__tools) {
+    min-height: 380px;
+    background-position:
+      0 0,
+      center bottom;
+    background-size:
+      auto,
+      100% auto;
+    background-color: #366abe;
+  }
+}
+@media (max-width: 639px) {
+  .nav {
+    top: 14px;
+  }
+  /* the applications board drawn smaller, so more of its columns show */
+  .board {
+    zoom: 0.72;
+    min-width: calc(100% / 0.72);
+  }
+  /* the templates a little wider on a phone, so each name keeps to one line */
+  .feature-card__sheets .sheet {
+    width: 52%;
+  }
+  .feature-card__sheets .sheet--a {
+    right: 2%;
+  }
+  .feature-card__sheets .sheet--b {
+    left: 2%;
+  }
+  .feature-card__sheets .sheet--c {
+    left: 24%;
+  }
+  /* no room for the name beside the mark in the phone's nav */
+  .nav__mark span {
+    display: none;
+  }
+  .nav a:not(.nav__mark) {
+    font-size: 15px;
+  }
+  .float-download {
+    display: none;
+  }
+  .feature-card {
+    padding: 22px 20px 0;
+  }
+  .feature-card > p,
+  .privacy p {
+    font-size: 17px;
+  }
+  .site .pill-btn--dark {
+    min-height: 52px;
+    font-size: 17px;
+  }
+  .dock {
+    padding-bottom: 20px;
+  }
+  .footer__cols {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .stamp {
+    grid-column: 1 / -1;
+    justify-self: center;
+  }
+  .footer__bar {
+    grid-template-columns: minmax(0, 1fr);
+    justify-items: center;
+    text-align: center;
+  }
+}

@@ -40,13 +40,13 @@ src/renderer/
     store/app-store.ts  dashboard, busy, progress, error, notice; action() and busyAction()
     ui/                 Page, Loading, Logo, SelectField, ConfirmRemove, icons, and CraftCV's
                         Stepper, Kanban, analysis trace, shimmer, and loading primitives
-    hairline/           vendored Hairline engine and the Press figure
+    hairline/           vendored Hairline engine, Press figure, and onboarding figures
   features/
     ai/                 provider choice hook, provider/model fields, consent
     projects/           repository import, AI understanding requested in the application flow
     workspace/          New application wizard: job, check the job, CV, projects, review; session store
     applications/       the Applications tracker: list and board views, and their actions
-    onboarding/         first run: the welcome, the setup checklist and the sample job
+    onboarding/         first run: a full-window CV/project setup before the app shell, plus the sample job
     documents/          document list, drafts store, Tiptap editor
     library/            Your sources page: CV and project import, repository tree, removal
     settings/           AI providers, getting started, and privacy

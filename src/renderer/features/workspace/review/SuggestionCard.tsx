@@ -37,7 +37,8 @@ export default function SuggestionCard({
           color={statusColor[suggestion.status]}
           className="status-label"
         >
-          {suggestion.status === 'approved' ? <Icon icon="lucide:check" width={14} /> : null}
+          {suggestion.status === 'approved' && <Icon icon="lucide:check" width={14} />}
+          {suggestion.status === 'rejected' && <Icon icon="lucide:x" width={14} />}
           {suggestion.status}
         </Chip>
       </div>
@@ -100,7 +101,11 @@ export default function SuggestionCard({
           isDisabled={saving !== null}
           onClick={() => void update('pending')}
         >
-          {saving === 'pending' && <Spinner aria-hidden="true" size="sm" color="current" />}
+          {saving === 'pending' ? (
+            <Spinner aria-hidden="true" size="sm" color="current" />
+          ) : (
+            <Icon icon="lucide:save" width={14} />
+          )}
           {saving === 'pending' ? 'Saving…' : 'Save draft'}
         </Button>
         <Button
@@ -110,7 +115,11 @@ export default function SuggestionCard({
           isDisabled={saving !== null}
           onClick={() => void update('rejected')}
         >
-          {saving === 'rejected' && <Spinner aria-hidden="true" size="sm" color="current" />}
+          {saving === 'rejected' ? (
+            <Spinner aria-hidden="true" size="sm" color="current" />
+          ) : (
+            <Icon icon="lucide:x" width={14} />
+          )}
           {saving === 'rejected' ? 'Rejecting…' : 'Reject'}
         </Button>
       </div>

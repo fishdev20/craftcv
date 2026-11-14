@@ -40,9 +40,17 @@ export default function CloudRefinePanel({ session }: { session: Session }) {
           <Typography.Paragraph size="sm">
             One request shares the job description (up to 12,000 characters), CV text (up to
             10,000), and up to 24 relevant source snippets (1,200 characters each), including file
-            paths. Review the sources before sharing. AI drafts replace this session’s current
-            suggestions.
+            paths. Review the sources before sharing.
           </Typography.Paragraph>
+          {!!session.suggestions.length && (
+            <div className="cloud-replace-note">
+              <Icon icon="lucide:info" width={16} aria-hidden="true" />
+              <Typography.Paragraph size="sm">
+                Generating AI drafts replaces this session’s suggestions, including any you edited
+                or approved.
+              </Typography.Paragraph>
+            </div>
+          )}
           <ProviderModelFields choice={choice} />
           <TextField value={budget} onChange={setBudget} type="number" className="budget-field">
             <Label>Optional session token budget</Label>

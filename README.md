@@ -51,7 +51,7 @@ npm run package:linux:x64 # Linux x64 AppImage
 
 ## Using CraftCV
 
-A first launch opens a short welcome and a setup checklist; **Settings → Getting started** shows them again.
+A first launch opens a full-window setup before the workspace. Add a CV and a project folder there, or defer either one. **Settings → Getting started** reopens setup without changing saved work.
 
 1. **Add the job.** Paste its text, or import its link. If a site blocks the import, use **Open the posting**, load the job in CraftCV's window, then **Use this page**.
 2. **Check the job.** Confirm the role, company and location. Optionally press **Analyse the job** to have an AI provider read its requirements.

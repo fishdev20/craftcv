@@ -29,10 +29,20 @@ const app = await electron.launch({
 try {
   const page = await app.firstWindow()
   page.on('pageerror', (e) => console.error('Renderer error:', e.message))
-  // a new install opens on the welcome, then the wizard with the setup checklist above it
+  // first-run setup is full-window, before the app shell
   await page.getByRole('button', { name: 'Get started' }).click()
+  await expect(page.getByRole('heading', { name: 'Start with your CV.' })).toBeVisible()
+  await expect(page.locator('.sidebar')).toHaveCount(0)
+  await app.evaluate(({ dialog }, cv) => {
+    dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [cv] })
+  }, cv)
+  await page.getByRole('button', { name: 'Import CV' }).click()
+  await expect(page.getByText('resume.md', { exact: true })).toBeVisible()
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await expect(page.getByRole('heading', { name: 'Show the work behind it.' })).toBeVisible()
+  await page.getByRole('button', { name: 'Do this later' }).click()
+  await page.getByRole('button', { name: 'Open workspace' }).click()
   await expect(page.getByRole('heading', { name: 'New application' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'Set up CraftCV' })).toBeVisible()
   const startupMs = Math.round(performance.now() - start)
   await page.waitForTimeout(1000)
   const idleMetrics = await app.evaluate(({ app }) => app.getAppMetrics())
@@ -49,16 +59,12 @@ try {
     .fill(
       'Frontend Developer\nAcme is hiring.\nRequirements:\n- React and testing\n- Accessibility experience',
     )
-  await page.getByRole('button', { name: 'Analyse the job' }).click()
+  await page.getByRole('button', { name: 'Check job details' }).click()
   await expect(page.getByRole('region', { name: 'Check the job' })).toBeVisible()
   await expect(page.getByLabel('Role')).toHaveValue('Frontend Developer')
   await expect(page.getByLabel('Company')).toHaveValue('Acme')
   await page.getByRole('button', { name: 'Continue' }).click()
-  await app.evaluate(({ dialog }, cv) => {
-    dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [cv] })
-  }, cv)
-  await page.getByRole('button', { name: /Import (your|another) CV/ }).click()
-  await expect(page.getByText('Imported resume.md', { exact: true })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'resume.md Master CV' })).toBeVisible()
   await page.getByRole('button', { name: 'Continue' }).click()
   await app.evaluate(({ dialog }, repository) => {
     dialog.showOpenDialog = async () => ({ canceled: false, filePaths: [repository] })

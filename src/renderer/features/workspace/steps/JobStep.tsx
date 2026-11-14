@@ -49,6 +49,7 @@ export default function JobStep() {
                 setTab('paste')
               }}
             >
+              <Icon icon="lucide:file-text" width={14} />
               Try a sample job
             </Button>
           </Typography.Paragraph>
@@ -87,7 +88,7 @@ export default function JobStep() {
         </Tabs>
       </div>
       <StepFooter
-        nextLabel="Analyse the job"
+        nextLabel="Check job details"
         nextDisabled={!ready || busy}
         onNext={continueFromJob}
       />

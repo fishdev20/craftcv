@@ -5,3 +5,10 @@ artifacts
 package-lock.json
 # Hairline engine (vendored, verified by hash) and figures (kept as validated by the hairline bench)
 src/renderer/common/hairline/**/*.js
+# the landing site's build output and its generated files
+website/.next
+website/out
+website/node_modules
+website/src/styles/app-theme.css
+website/next-env.d.ts
+website/.capture

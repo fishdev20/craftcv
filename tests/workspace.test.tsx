@@ -14,7 +14,7 @@ globalThis.ResizeObserver ??= class {
 } as unknown as typeof ResizeObserver
 Element.prototype.getAnimations ??= () => []
 // these cases are about the wizard; the first-run welcome has its own tests
-useOnboardingStore.setState({ welcomed: true, setupHidden: true })
+useOnboardingStore.setState({ welcomed: true })
 afterEach(() => useWorkspaceStore.setState({ application: null }))
 type AppState = ReturnType<typeof useAppStore.getState>
 type WorkspaceState = ReturnType<typeof useWorkspaceStore.getState>
@@ -53,7 +53,7 @@ it('requires the job first, then a project, before analysing', () => {
       <Workspace />
     </MemoryRouter>,
   )
-  const next = () => screen.getByRole('button', { name: 'Analyse the job' }) as HTMLButtonElement
+  const next = () => screen.getByRole('button', { name: 'Check job details' }) as HTMLButtonElement
   expect(next().disabled).toBe(true)
   fireEvent.click(screen.getByRole('tab', { name: /Paste the text/ }))
   fireEvent.change(screen.getByLabelText('Target job description'), {

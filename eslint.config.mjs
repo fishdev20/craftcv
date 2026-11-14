@@ -3,7 +3,14 @@ import ts from 'typescript-eslint'
 import hooks from 'eslint-plugin-react-hooks'
 export default ts.config(
   {
-    ignores: ['out/**', 'release/**', 'node_modules/**', 'src/renderer/common/hairline/kernel.js'],
+    ignores: [
+      'out/**',
+      'release/**',
+      'node_modules/**',
+      'src/renderer/common/hairline/kernel.js',
+      // the landing page is its own Next.js project with its own lint
+      'website/**',
+    ],
   },
   js.configs.recommended,
   ...ts.configs.recommended,
